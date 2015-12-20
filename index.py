@@ -11,7 +11,7 @@ from werkzeug import secure_filename
 from wikigrabber import gatherer as gr
 
 #define constants
-UPLOAD_FOLDER = 'files'
+UPLOAD_FOLDER = 'test_files'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'docx', 'doc'])
 
 #create a flask instance 
