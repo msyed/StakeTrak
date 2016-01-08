@@ -4,11 +4,12 @@ import wikipedia
 from havenondemand.hodindex import HODClient
 import os
 
+
 #define function
 def wikipediagrabber(filepath):  
 
 	#make API call, as outlined in https://github.com/HPE-Haven-OnDemand/havenondemand-python
-	client = HODClient("http://api.havenondemand.com/", "5e8a3841-5bec-43cc-9dac-5e5d0a90bbc9")
+	client = HODClient("5e8a3841-5bec-43cc-9dac-5e5d0a90bbc9")
 	r = client.post('extractentities', data={'entity_type': ['people_eng'], 'unique_entities': 'true'},files={'file':open(filepath,'rb')}   )
 
 	#set variables
@@ -43,7 +44,7 @@ def gatherer():
 	dicts = []
 
 	#get file names from folder of files
-	filenames = os.listdir('files/') 
+	filenames = os.listdir('test_files/') 
 	
 	#remove hidden files
 	for i in filenames:
@@ -52,7 +53,7 @@ def gatherer():
 
 	#iterate through each file and run wikigrabber function	
 	for info in filenames:
-		dicts.append(wikipediagrabber('files/' + info))	
+		dicts.append(wikipediagrabber('test_files/' + info))	
 
 	#merge separate dictionaries, adapted from http://stackoverflow.com/questions/9415785/merging-several-python-dictionaries	
 	super_dict = {}

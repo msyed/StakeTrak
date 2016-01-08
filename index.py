@@ -10,6 +10,8 @@ from werkzeug import secure_filename
 #personal python function that returns names, wikipedia summaries, and wikipedia links in documents
 from wikigrabber import gatherer as gr
 
+from dbfunc import dbinsert
+
 #define constants
 UPLOAD_FOLDER = 'test_files'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'docx', 'doc'])
@@ -78,6 +80,9 @@ def thirdpage():
 		#create dictionary of named entities	
 		else:
 			namedidentities = gr()
+			#for i in namedidentities.values():
+			#	print i[0][0]
+			#dbinsert(namedidentities)
 
 			#pass named entities to template
 			return render_template('thirdpage.html', wiki=namedidentities)
