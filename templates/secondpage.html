@@ -35,6 +35,19 @@
                 <form method="post" action="{{ url_for('thirdpage') }}">
                   <button type="submit", class="btn btn-warning cancel">SUBMIT</button>
                 </form>
+
+                <form method="get" action="{{ url_for('thirdpage') }}">
+                  <input type="text" name="q">
+                </form>
+<!-- 
+                <form action="action_page.php">
+                  First name:<br>
+                  <input type="text" name="firstname" value="Mickey"><br>
+                  Last name:<br>
+                  <input type="text" name="lastname" value="Mouse"><br><br>
+                  <input type="submit" value="Submit">
+                </form> -->
+
                 <br><br> 
             </div>
              <script type="text/javascript" src="{{ url_for('static', filename='') }}js/dropzone.js"></script>

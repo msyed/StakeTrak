@@ -20,3 +20,12 @@ def dbinsert(dict):
 	      VALUES ("+entities[0][0]+")");
 
 	conn.close()
+
+
+def dbquery(q):
+	conn = sqlite3.connect("ASG.db")
+
+
+	result = '''  '''
+	conn.close()
+	return result

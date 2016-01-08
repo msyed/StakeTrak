@@ -10,7 +10,7 @@ from werkzeug import secure_filename
 #personal python function that returns names, wikipedia summaries, and wikipedia links in documents
 from wikigrabber import gatherer as gr
 
-from dbfunc import dbinsert
+from dbfunc import dbinsert, dbquery
 
 #define constants
 UPLOAD_FOLDER = 'test_files'
@@ -89,6 +89,11 @@ def thirdpage():
 	
 	#prevent GET requests for third page
 	if request.method == 'GET':
+		# if theres a qeury, return results
+		searchword = request.args.get('q', '')
+		if searchword:
+			namedidentities = dbquery(searchword)
+			render_template('querypage.html', wiki=namedidentities)
 	  	return redirect(url_for('index'))
 
 #run app and use debugger to check Flask errors  
