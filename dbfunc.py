@@ -20,6 +20,7 @@ def dbinsert(hpdict):
 	for entity in hpdict.values():
 		print entity[0][0]
 		#0 index = name, 1st index = description, 2nd index = link
+		for 
 		c.execute("INSERT INTO ENTITIES(NAME) VALUES ('" + entity[0][0] + "');")
 
 	conn.commit()
