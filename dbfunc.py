@@ -1,5 +1,7 @@
 import sqlite3
 
+
+
 def dbinsert(hpdict):
 	print "hpdict:"
 	print hpdict
@@ -18,10 +20,10 @@ def dbinsert(hpdict):
 		pass
 
 	for entity in hpdict.values():
-		print entity[0][0]
 		#0 index = name, 1st index = description, 2nd index = link
-		for 
-		c.execute("INSERT INTO ENTITIES(NAME) VALUES ('" + entity[0][0] + "');")
+		name_no_apostrophes = entity[0][0].replace("'", "")
+		desc_no_apostrophes = entity[0][1].replace("'", "")
+		c.execute("INSERT INTO ENTITIES(NAME, TAGS, LINKS) VALUES ('" + name_no_apostrophes + "', '" + desc_no_apostrophes + "', '" + entity[0][2] + "')")
 
 	conn.commit()
 	conn.close()

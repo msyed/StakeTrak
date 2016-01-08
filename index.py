@@ -80,6 +80,8 @@ def thirdpage():
 		#create dictionary of named entities	
 		else:
 			namedidentities = gr()
+			print "namedidentities:"
+			print namedidentities
 			for i in namedidentities.values():
 				print i[0][0]
 			dbinsert(namedidentities)
@@ -93,7 +95,8 @@ def thirdpage():
 		searchword = request.args.get('q', '')
 		if searchword:
 			namedidentities = dbquery(searchword)
-			render_template('thirdpage.html', wiki=namedidentities)
+			
+			return render_template('thirdpage.html', wiki=namedidentities)
 	  	return redirect(url_for('index'))
 
 #run app and use debugger to check Flask errors  
