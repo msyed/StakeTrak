@@ -1,39 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
+  <!-- Adapted from Twitter Bootstrap template at http://startbootstrap.com/template-overviews/agency/--> 
+  <head>
 
-    <!-- Adapted from Twitter Bootstrap template at http://startbootstrap.com/template-overviews/agency/--> 
-    <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="">
-        <meta name="author" content="">
+    <title>StakeTrak</title>
 
-        <title>StakeTrak</title>
-    
-        <!-- Bootstrap Core CSS -->
-        <link href="{{ url_for('static', filename='') }}css/bootstrap.css" rel="stylesheet">
-    
-        <!-- Custom CSS -->
-        <link href="{{ url_for('static', filename='') }}css/stylish-portfolio.css" rel="stylesheet">
-    
-        <!-- Custom Fonts -->
-        <link href="{{ url_for('static',filename='') }}font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    
-    </head>
+    <script src="{{ url_for('static', filename='') }}js/jquery.js"></script>
 
-    <body>
-        <!-- Header -->
-        <header id="top" class="header">
-            <div class="text-vertical-center">
-                <h1>StakeTrak</h1>
-                <h3>Find, Analyze, and Search the People in Your Documents</h3>
-                <br>
-    
-                <!-- button for second page -->
-                <a href='/secondpage'class="btn btn-dark btn-lg">Add New Files</a>
-                <a href='/dbsecondpage'class="btn btn-dark btn-lg">Search Database</a>
-            </div>
-        </header>
-    </body>    
+    <script src="{{ url_for('static', filename='') }}js/index.js"></script>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="{{ url_for('static', filename='') }}css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='') }}css/stylish-portfolio.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="{{ url_for('static',filename='') }}font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">    
+  </head>
+  <body>
+    <!-- Header -->
+    <header id="top" class="header">
+      <div class="text-vertical-center">
+        <h1>StakeTrak</h1>
+        <h3>Find, Analyze, and Search the People in Your Documents</h3>
+        <br>
+
+        <!-- button for second page -->
+        <div id="options-container">
+          <a href="/secondpage" class="btn btn-dark btn-lg" id="add-new-files">Add New Files</a>
+          <div class="btn btn-dark btn-lg" id="search-db">Search Database</div>
+        </div>
+
+        <form id="search-form" style="display: none;" method="get" action="{{ url_for('thirdpage') }}">
+          <input type="text" name="q" placeholder="Search here..." required>
+          <br>
+          <br>
+          <button class="btn btn-dark btn-lg" type="submit">Search</button>
+          <a class="btn btn-dark btn-lg" id="go-back">Go Back</a>
+        </form> 
+      </div>
+    </header>
+  </body>  
+</html>  
