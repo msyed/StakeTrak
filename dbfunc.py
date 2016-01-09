@@ -44,9 +44,12 @@ def dbinsert(hpdict):
 def dbquery(query):
 	conn = sqlite3.connect("ASG.db")
 	wordlist = set(query.split(" "))
-	with c:
+	rows = []
+	with conn:
 		c = conn.cursor()
 		for word in wordlist:
-			c.execute("SELECT * FROM ENTITIES WHERE NAME ")
+			c.execute("SELECT * FROM ENTITIES WHERE NAME LIKE '" + %word% + "' OR TAGS '%word%' OR LINKS LIKE '%word%'")
+			rows += c.fetchall()
 
-	return entity
+	rows = set(rows)
+	print rows
