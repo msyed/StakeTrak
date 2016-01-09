@@ -1,9 +1,10 @@
 import sqlite3
 
+# returns 0 if empty query, 1 if query returned stuff
 def cursorlen(cursor):
 	c = 0
 	for item in cursor:
-		c = c + 1
+		return 1
 	return c
 
 def dbinsert(hpdict):
@@ -42,6 +43,9 @@ def dbinsert(hpdict):
 
 
 def dbquery(query):
+	print "QUERY:"
+	print query
+	print type(query)
 	conn = sqlite3.connect("ASG.db")
 	wordlist = set(query.split(" "))
 	rows = []
@@ -50,6 +54,9 @@ def dbquery(query):
 		for word in wordlist:
 			c.execute("SELECT * FROM ENTITIES WHERE NAME LIKE '%" + word + "%' OR TAGS LIKE '%" + word + "%' OR LINKS LIKE '%" + word + "%'")
 			rows = rows + c.fetchall()
+
+	conn.commit()
+	conn.close()
 	if rows:
 		return {0: rows}
 	else:
