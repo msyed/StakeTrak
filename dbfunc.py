@@ -48,8 +48,6 @@ def dbquery(query):
 	with conn:
 		c = conn.cursor()
 		for word in wordlist:
-			c.execute("SELECT * FROM ENTITIES WHERE NAME LIKE '" + %word% + "' OR TAGS '%word%' OR LINKS LIKE '%word%'")
-			rows += c.fetchall()
-
-	rows = set(rows)
-	print rows
+			c.execute("SELECT * FROM ENTITIES WHERE NAME LIKE '%" + word + "%' OR TAGS LIKE '%" + word + "%' OR LINKS LIKE '%" + word + "%'")
+			rows.append(c.fetchall())
+	return {0: rows}
