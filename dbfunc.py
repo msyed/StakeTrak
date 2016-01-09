@@ -50,4 +50,7 @@ def dbquery(query):
 		for word in wordlist:
 			c.execute("SELECT * FROM ENTITIES WHERE NAME LIKE '%" + word + "%' OR TAGS LIKE '%" + word + "%' OR LINKS LIKE '%" + word + "%'")
 			rows = rows + c.fetchall()
-	return {0: rows}
+	if rows:
+		return {0: rows}
+	else:
+		return 0
