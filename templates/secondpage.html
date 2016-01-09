@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-
- <!-- Adapted from Twitter Bootstrap template at http://startbootstrap.com/template-overviews/grayscale/--> 
-<head>
-
+  <!-- Adapted from Twitter Bootstrap template at http://startbootstrap.com/template-overviews/grayscale/--> 
+  <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,24 +9,15 @@
     <meta name="author" content="">
 
     <title>StakeTrak</title>
-    
 
     <link href="{{ url_for('static', filename='') }}css/bootstrap.min.css" rel="stylesheet">
-    
     <link href="{{ url_for('static', filename='') }}css/grayscale.css" rel="stylesheet">
     <link href="{{ url_for('static', filename='') }}font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"> 
     <link href="{{ url_for('static', filename='') }}css/dropzone.css" rel="stylesheet">
     <link href="{{ url_for('static', filename='') }}css/basic.css" rel="stylesheet">
-
     <link href="{{ url_for('static', filename='') }}css/custom.css" rel="stylesheet">
-    
-    
-    
-</head>
-
-  
-<body>
-
+  </head>
+  <body>
     <form method="get" action="{{ url_for('thirdpage') }}" class="form-wrapper cf">
         <input type="text" name="q" placeholder="Search here..." required>
         <button type="submit">Search</button>
@@ -38,35 +27,34 @@
       <input class="blacktext" placeholder="Enter Search" type="text" name="q">
       <input class="blacktext" id="submit" type="submit" value="Search">
     </form>
-        -->
-    <section id="about" class="container content-section text-center">
-            
+    -->
+    <section id="about" class="container content-section text-center"> 
       <!-- file drop zone -->
-          <div class="col-md-8 col-md-offset-2">
-              <h1>Drag and Drop Files</h1>
-                <!-- put files in user's folder -->
-                <form method="post" enctype=multipart/form-data action="{{ url_for('uploader') }}" class="dropzone">
-                  <div class="fallback">
-                    <input name="file" type="file" multiple="multiple"/>
-                  </div>
-                </form>
-                <!-- process files in folder after submit button is pressed -->
-                <br>
-                <form method="post" action="{{ url_for('thirdpage') }}">
-                  <button type="submit", class="btn btn-warning cancel">SUBMIT</button>
-                </form>
+      <div class="col-md-8 col-md-offset-2">
+        <h1>Drag and Drop Files</h1>
+        <!-- put files in user's folder -->
+        <form method="post" enctype=multipart/form-data action="{{ url_for('uploader') }}" class="dropzone">
+          <div class="fallback">
+            <input name="file" type="file" multiple="multiple"/>
+          </div>
+        </form>
+        <!-- process files in folder after submit button is pressed -->
+        <br>
+        <form method="post" action="{{ url_for('thirdpage') }}">
+          <button type="submit", class="btn btn-warning cancel">SUBMIT</button>
+        </form>
 
-        <!-- 
-                <form action="action_page.php">
-                  First name:<br>
-                  <input type="text" name="firstname" value="Mickey"><br>
-                  Last name:<br>
-                  <input type="text" name="lastname" value="Mouse"><br><br>
-                  <input type="submit" value="Submit">
-                </form> -->
-            </div>
+      <!-- 
+        <form action="action_page.php">
+          First name:<br>
+          <input type="text" name="firstname" value="Mickey"><br>
+          Last name:<br>
+          <input type="text" name="lastname" value="Mouse"><br><br>
+          <input type="submit" value="Submit">
+        </form> -->
+        </div>
 
-            <script type="text/javascript" src="{{ url_for('static', filename='') }}js/dropzone.js"></script>
-        </section>
-</body>
+        <script type="text/javascript" src="{{ url_for('static', filename='') }}js/dropzone.js"></script>
+    </section>
+  </body>
 </html> 

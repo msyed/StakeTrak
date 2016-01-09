@@ -61,10 +61,10 @@ def uploader():
 		filenames = []
 		
 		#take user files and save in upload folder
-		for file in files:
-			if file and allowed_file(file.filename):
-				filename = secure_filename(file.filename)
-				file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+		for f in files:
+			if f and allowed_file(f.filename):
+				filename = secure_filename(f.filename)
+				f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 				filenames.append(filename)
 		return 'OKAY'
 
@@ -99,8 +99,10 @@ def thirdpage():
 		searchword = request.args.get('q', '')
 		if searchword:
 			namedidentities = dbquery(searchword)
-
-			return render_template('thirdpage.html', wiki=namedidentities)
+			if namedidentities:
+				return render_template('thirdpage.html', wiki=namedidentities)
+			else:
+				return render_template('emptysearch.html')
 	  	return redirect(url_for('index'))
 
 #run app and use debugger to check Flask errors  
