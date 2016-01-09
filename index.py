@@ -46,6 +46,10 @@ def secondpage():
 	    except Exception, e:
 	        print e
 	return render_template('secondpage.html')
+@app.route('/dbsecondpage')
+def dbsecondpage():
+	return render_template('dbsecondpage.html')
+
 
 #upload files, adapted from http://flask.pocoo.org/docs/0.10/patterns/fileuploads/
 @app.route('/uploader', methods=['GET', 'POST'])
