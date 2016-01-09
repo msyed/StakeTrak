@@ -95,7 +95,7 @@ def thirdpage():
 		searchword = request.args.get('q', '')
 		if searchword:
 			namedidentities = dbquery(searchword)
-			
+
 			return render_template('thirdpage.html', wiki=namedidentities)
 	  	return redirect(url_for('index'))
 
