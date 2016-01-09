@@ -1,6 +1,10 @@
 import sqlite3
 
-
+def cursorlen(cursor):
+	c = 0
+	for item in cursor:
+		c = c + 1
+	return c
 
 def dbinsert(hpdict):
 	print "hpdict:"
@@ -11,13 +15,15 @@ def dbinsert(hpdict):
 
 	print "Opened Successfully"
 
-	try:
+	val = c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='ENTITIES'")
+	print "cursorlen:"
+	print cursorlen(val)
+
+	if cursorlen(val) == 0:
 		c.execute('''CREATE TABLE ENTITIES
 		       (NAME TEXT PRIMARY KEY     NOT NULL,
 		        TAGS          TEXT,
 		       LINKS         TEXT);''')
-	except sqlite3.OperationalError:
-		pass
 
 	for entity in hpdict.values():
 		#0 index = name, 1st index = description, 2nd index = link
