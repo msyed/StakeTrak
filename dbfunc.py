@@ -17,9 +17,12 @@ def dbinsert(hpdict):
 
 	val = c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='ENTITIES'")
 	print "cursorlen:"
-	print cursorlen(val)
-
-	if cursorlen(val) == 0:
+	l = cursorlen(val)
+	print l
+	print type(l)
+	print (l == 0)
+	if l == 0:
+		print "ABOUT TO CREATE A TABLE!"
 		c.execute('''CREATE TABLE ENTITIES
 		       (NAME TEXT PRIMARY KEY     NOT NULL,
 		        TAGS          TEXT,
@@ -29,7 +32,10 @@ def dbinsert(hpdict):
 		#0 index = name, 1st index = description, 2nd index = link
 		name_no_apostrophes = entity[0][0].replace("'", "")
 		desc_no_apostrophes = entity[0][1].replace("'", "")
-		c.execute("INSERT INTO ENTITIES(NAME, TAGS, LINKS) VALUES ('" + name_no_apostrophes + "', '" + desc_no_apostrophes + "', '" + entity[0][2] + "')")
+		get_entity = c.execute("SELECT * FROM ENTITIES WHERE NAME='" + entity[0][0] + "' ")
+		# Ensure that entry with that name doesn't already exist
+		if cursorlen(get_entity) == 0:
+			c.execute("INSERT INTO ENTITIES(NAME, TAGS, LINKS) VALUES ('" + name_no_apostrophes + "', '" + desc_no_apostrophes + "', '" + entity[0][2] + "')")
 
 	conn.commit()
 	conn.close()
