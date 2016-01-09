@@ -29,11 +29,12 @@ def dbinsert(hpdict):
 	conn.close()
 
 
-def dbquery(q):
+def dbquery(query):
 	conn = sqlite3.connect("ASG.db")
-	c = conn.cursor()
+	wordlist = set(query.split(" "))
+	with c:
+		c = conn.cursor()
+		for word in wordlist:
+			c.execute("SELECT * FROM ENTITIES WHERE NAME ")
 
-	entity = [o for o in c.execute("SELECT * FROM ENTITIES WHERE NAME='Barack Obama'")][0]
-
-	conn.close()
 	return entity
