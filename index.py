@@ -19,7 +19,7 @@ ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'docx', 'doc'])
 #create a flask instance 
 app = Flask(__name__)
 
-# secret key
+# secret keyq
 app.secret_key = '\xd3\xbdMBJ\xbb\xfe\x8d\xe4\xe9\xb8\x15\xde]\xd9ei\xfb\x8f1\xb2=O\x16'
 
 #configure constant upload folder
@@ -67,7 +67,7 @@ def index():
 		return redirect('login')
 
 #render second page
-@app.route('/secondpage', methods=['GET', 'POST'])
+@app.route('/secondpage', methods=['POST'])
 def secondpage():
 	
 	#adapted from http://stackoverflow.com/questions/185936/delete-folder-contents-in-python
@@ -87,7 +87,7 @@ def dbsecondpage():
 	return render_template('dbsecondpage.html')
 
 #upload files, adapted from http://flask.pocoo.org/docs/0.10/patterns/fileuploads/
-@app.route('/uploader', methods=['GET', 'POST'])
+@app.route('/uploader', methods=['POST'])
 def uploader():
 
 	#ensure POST request
