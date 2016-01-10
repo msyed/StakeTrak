@@ -19,7 +19,7 @@ ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'docx', 'doc'])
 #create a flask instance 
 app = Flask(__name__)
 
-# secret key
+# secret keyq
 app.secret_key = '\xd3\xbdMBJ\xbb\xfe\x8d\xe4\xe9\xb8\x15\xde]\xd9ei\xfb\x8f1\xb2=O\x16'
 
 #configure constant upload folder
