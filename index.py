@@ -118,7 +118,7 @@ def thirdpage():
 		
 		#create dictionary of named entities	
 		else:
-			namedidentities = gr()
+			namedidentities, upload_time = gr()
 			print "namedidentities:"
 			print namedidentities
 			for i in namedidentities.values():
@@ -140,12 +140,18 @@ def thirdpage():
 				return render_template('emptysearch.html')
 	  	return redirect(url_for('index'))
 
+
 @app.route("/logout", methods=['POST'])
 def logout():
 	if request.method == 'POST':
 		if 'username' in session:
 			session.pop('username', None)
 	return redirect(url_for('login'))
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
 #run app and use debugger to check Flask errors  
 if __name__ == '__main__':

@@ -3,20 +3,21 @@ import json
 import wikipedia
 from havenondemand.hodindex import HODClient
 import os
+import requests
 
 
 #define function
 def wikipediagrabber(filepath):  
 
 	#make API call, as outlined in https://github.com/HPE-Haven-OnDemand/havenondemand-python
-	client = HODClient("5e8a3841-5bec-43cc-9dac-5e5d0a90bbc9")
+	client = HODClient("5796fa6f-a9a7-4186-b53d-ab435c9c53ad")
 	r = client.post('extractentities', data={'entity_type': ['people_eng'], 'unique_entities': 'true'},files={'file':open(filepath,'rb')}   )
 
 	#set variables
 	myjson = r.json()
 	identifiers = []
 	dictionary={}
-	
+	filename = filepath.replace("test_files","")
 	#iterate through each named entity
 	for i in range(0, len(myjson['entities'])):
 		
@@ -29,7 +30,7 @@ def wikipediagrabber(filepath):
 			if identifier not in identifiers:
 				identifiers.append(identifier)
 				entry = myjson['entities'][i]['original_text']
-				dictionary[myjson['entities'][i]['additional_information']['wikidata_id']] = [myjson['entities'][i]['original_text'], wikipedia.summary(entry, sentences = 5), myjson['entities'][i]['additional_information']['wikipedia_eng']]
+				dictionary[myjson['entities'][i]['additional_information']['wikidata_id']] = [entry, wikipedia.summary(entry, sentences = 5), myjson['entities'][i]['additional_information']['wikipedia_eng'],filename]
  		
  		#do not add to dictionary if they do not have wikipedia pages		
 		except (wikipedia.exceptions.DisambiguationError, wikipedia.exceptions.PageError) as e:
@@ -51,13 +52,22 @@ def gatherer():
 		if i[0] == '.':
 			filenames.remove(i)
 
+	upload_size = 0
 	#iterate through each file and run wikigrabber function	
 	for info in filenames:
+		upload_size = upload_size + os.path.getsize('test_files/' + info)
 		dicts.append(wikipediagrabber('test_files/' + info))	
 
+	# approximate hp backend time is 160,000 bytes/sec
+	upload_seconds = int(upload_size/160000)
+	upload_time = ""
+	if upload_seconds > 120:
+		upload_time = "upload time is approximately " + str(int(upload_seconds / 60)) + " minutes."
+	else:
+		upload_time = "upload time is approximately " + str(upload_seconds) + " seconds."
 	#merge separate dictionaries, adapted from http://stackoverflow.com/questions/9415785/merging-several-python-dictionaries	
 	super_dict = {}
 	for entry in dicts:
 		for k, v in entry.iteritems():
 			super_dict.setdefault(k, []).append(v)
-	return super_dict
+	return super_dict, upload_time
