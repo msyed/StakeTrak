@@ -3,112 +3,113 @@
  <!-- Adapted from Twitter Bootstrap template at http://startbootstrap.com/template-overviews/freelancer/--> 
 
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
 
-    <title>The People</title>
+  <title>The People</title>
 
-    <!-- Bootstrap Core CSS - Uses Bootswatch Flatly Theme: http://bootswatch.com/flatly/ -->
-    <link href="{{ url_for('static', filename='') }}css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Core CSS - Uses Bootswatch Flatly Theme: http://bootswatch.com/flatly/ -->
+  <link href="{{ url_for('static', filename='') }}css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Bootstrap Core CSS - Uses Bootswatch Flatly Theme: http://bootswatch.com/flatly/ -->
-    <link href="{{ url_for('static', filename='') }}css/custom.css" rel="stylesheet">
+  <!-- Bootstrap Core CSS - Uses Bootswatch Flatly Theme: http://bootswatch.com/flatly/ -->
+  <link href="{{ url_for('static', filename='') }}css/custom.css" rel="stylesheet">
 
-    <!-- Custom CSS -->
-    <link href="{{ url_for('static', filename='') }}css/freelancer.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link href="{{ url_for('static', filename='') }}css/freelancer.css" rel="stylesheet">
 
-    <!-- Custom Fonts -->
-    <link href="{{ url_for('static', filename='') }}font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+  <!-- Custom Fonts -->
+  <link href="{{ url_for('static', filename='') }}font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-    <title>Named Entities</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
 
-    <link rel="shortcut icon" href="{{ url_for('static', filename='img/6424402.jpeg') }}" type="image/x-icon">
+  <title>Named Entities</title>
 
-    <link href="{{ url_for('static', filename='') }}css/bootstrap.min.css" rel="stylesheet">
-    <link href="{{ url_for('static', filename='') }}css/landing-page.css" rel="stylesheet">
-    <link href="{{ url_for('static', filename='') }}font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='img/6424402.jpeg') }}" type="image/x-icon">
+
+  <link href="{{ url_for('static', filename='') }}css/bootstrap.min.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='') }}css/landing-page.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='') }}font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
 </head>
 
 <body id="page-top" class="index">
+  <!-- Navigation -->
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#page-top">Named People</a>
+      </div>
 
-    <!-- Navigation -->
-    <nav class="navbar navbar-default navbar-fixed-top">
-        <div class="container">
-            
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header page-scroll">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="#page-top">Named People</a>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container-fluid -->
+  </nav>
+
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div class="row">
+        <body>
+
+        <!-- iterate through each named person and print relevant details-->
+        {% for id, info in wiki.iteritems(): %}
+          <div class="col-lg-12">
+            <div class="intro-text">
+              <br>
+
+              <!-- provide name of person-->                             
+              <span class="name"> {% print info[0][0] %} </span>
+              <hr class="star-light">
+              <div class="row">
+
+                <!-- provide wikipedia summary-->                           
+                <p> {% print info[0][1] %} <p>
+
+                <!-- provide link to wikipedia article in red-->
+                <a href="{% print info[0][2] %}" style="color: #CC0000">Full Wikipedia Article</a>
+                  
+                <!-- line breaks following each entry -->
+                <br> 
+                <br>  
+              </div>  
             </div>
+          </div>                  
+        {% endfor %}
+        </body>                    
+      </div>
+    </div>
+  </header>
 
-            <!-- /.navbar-collapse -->
-        </div>
-        <!-- /.container-fluid -->
-    </nav>
+  <!-- jQuery -->
+  <script src="{{ url_for('static', filename='') }}js/jquery.js"></script>
 
-    <!-- Header -->
-    <header>
-        <div class="container">
-            <div class="row">
-                    <body>
+  <!-- Bootstrap Core JavaScript -->
+  <script src="{{ url_for('static', filename='') }}js/bootstrap.min.js"></script>
 
-                    <!-- iterate through each named person and print relevant details-->  {% for id, info in wiki.iteritems(): %}
-                        <div class="col-lg-12">
-                            <div class="intro-text">
-                                <br>
+  <!-- Plugin JavaScript -->
+  <script src="{{ url_for('static', filename='') }}js/jquery.easing.min.js"></script>
+  <script src="{{ url_for('static', filename='') }}js/classie.js"></script>
+  <script src="{{ url_for('static', filename='') }}js/cbpAnimatedHeader.js"></script>
 
-                                <!-- provide name of person-->                             
-                                <span class="name"> {% print info[0][0] %} </span>
-                                <hr class="star-light">
-                        <div class="row">
+  <!-- Custom Theme JavaScript -->
+  <script src="{{ url_for('static', filename='') }}js/freelancer.js"></script>
 
-                        <!-- provide wikipedia summary-->                           
-                        <p> {% print info[0][1] %} <p>
-
-                        <!-- provide link to wikipedia article in red-->
-                        <a href="{% print info[0][2] %}" style="color: #CC0000">Full Wikipedia Article</a>
-                        
-                        <!-- line breaks following each entry -->
-                        <br> 
-                        <br>                        
-                        {% endfor %}
-                    </body>
-            </div>                    
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- jQuery -->
-    <script src="{{ url_for('static', filename='') }}js/jquery.js"></script>
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="{{ url_for('static', filename='') }}js/bootstrap.min.js"></script>
-
-    <!-- Plugin JavaScript -->
-    <script src="{{ url_for('static', filename='') }}js/jquery.easing.min.js"></script>
-    <script src="{{ url_for('static', filename='') }}js/classie.js"></script>
-    <script src="{{ url_for('static', filename='') }}js/cbpAnimatedHeader.js"></script>
-
-    <!-- Custom Theme JavaScript -->
-    <script src="{{ url_for('static', filename='') }}js/freelancer.js"></script>
-
-    <script src="{{ url_for('static', filename='') }}js/jquery.js"></script>
-    <script src="{{ url_for('static', filename='') }}js/bootstrap.min.js"></script>
+  <script src="{{ url_for('static', filename='') }}js/jquery.js"></script>
+  <script src="{{ url_for('static', filename='') }}js/bootstrap.min.js"></script>
 </body>
 </html> 
