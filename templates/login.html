@@ -1,0 +1,43 @@
+<html>
+  <head>
+    <title>Login</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>StakeTrak</title>
+
+    <script src="{{ url_for('static', filename='') }}js/jquery.js"></script>
+
+    <script src="{{ url_for('static', filename='') }}js/index.js"></script>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="{{ url_for('static', filename='') }}css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='') }}css/stylish-portfolio.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="{{ url_for('static',filename='') }}font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">  
+    
+  </head>
+  <body background="../static/img/firstbackground.gif" >
+    <div class="container" style="text-align:center">
+      <h1>Welcome to StakeTrak</h1>
+      <h3>Please log in</h3>
+      <br>
+      <form action="" method="post">
+        <input type="text" placeholder="Username" name="username" value="{{
+          request.form.username }}">
+         <input type="password" placeholder="Password" name="password" value="{{
+          request.form.password }}">
+        <input class="btn btn-default" type="submit" value="Login">
+      </form>
+      {% if error %}
+        <p class="error"><strong>Error:</strong> {{ error }}
+      {% endif %}
+    </div>
+  </body>
+</html>

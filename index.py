@@ -2,7 +2,7 @@
 import os, shutil
 
 #web application framework written in python
-from flask import Flask, request, url_for, make_response, redirect, render_template
+from flask import Flask, session, request, url_for, make_response, redirect, render_template
 
 #to restrict types of files
 from werkzeug import secure_filename
@@ -19,6 +19,9 @@ ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'docx', 'doc'])
 #create a flask instance 
 app = Flask(__name__)
 
+# secret key
+app.secret_key = '\xd3\xbdMBJ\xbb\xfe\x8d\xe4\xe9\xb8\x15\xde]\xd9ei\xfb\x8f1\xb2=O\x16'
+
 #configure constant upload folder
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -27,15 +30,47 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
+#render login
+@app.route('/', methods=['GET', 'POST'])
+def login():
+
+    if 'username' in session:
+        redirect(url_for('index'))  
+    
+    if request.method == 'GET':
+		return render_template('login.html', error=0)
+		
+    if request.method == 'POST':
+        if (not 'username' in request.form) or (not 'password' in request.form):
+			# login failed - incomplete form
+            return render_template('login.html', error=1)
+		
+        if request.form['username'] == 'admin' and request.form['password'] == 'admin':
+				session['username'] = request.form['username']
+				redirect(url_for('index'))
+        else:
+			# login failed - bad credentials
+            return render_template('login.html', error=2)
+    else:
+		abort(405)
+
+    return redirect(url_for('index'))
+
 #render homepage
-@app.route('/')
+@app.route('/index')
 def index():
-	return render_template('index.html')
+    if 'username' in session:
+		# logged in!
+	    return render_template('index.html', username=session['username'])
+    else:
+	    return render_template('index.html')
 
 #render second page
 @app.route('/secondpage')
 def secondpage():
-
+    
+    #check if username is in session, if not send to login page
+    
 	#adapted from http://stackoverflow.com/questions/185936/delete-folder-contents-in-python
 	#delete all old files when renderding second page to ensure new upload screen for user
 	for the_file in os.listdir(UPLOAD_FOLDER):
@@ -46,7 +81,13 @@ def secondpage():
 	    except Exception, e:
 	        print e
 	return render_template('secondpage.html')
+	
+	
 @app.route('/dbsecondpage')
+
+#check if username is in session, if not send to login page
+
+
 def dbsecondpage():
 	return render_template('dbsecondpage.html')
 
@@ -55,6 +96,9 @@ def dbsecondpage():
 @app.route('/uploader', methods=['GET', 'POST'])
 def uploader():
 
+    #check if username is in session, if not send to login page
+    
+    
 	#ensure POST request
 	if request.method == 'POST':
 		files = request.files.getlist('file')
@@ -76,6 +120,8 @@ def uploader():
 @app.route('/thirdpage', methods=['GET', 'POST'])
 def thirdpage():
 	
+	#check if username is in session, if not send to login page
+	
 	#render error screen if user does not upload files
 	if request.method == 'POST':
 		if not os.listdir(UPLOAD_FOLDER):
@@ -95,7 +141,7 @@ def thirdpage():
 	
 	#prevent GET requests for third page
 	if request.method == 'GET':
-		# if theres a qeury, return results
+		# if theres a query, return results
 		searchword = request.args.get('q', '')
 		if searchword:
 			namedidentities = dbquery(searchword)
