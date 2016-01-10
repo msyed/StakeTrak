@@ -27,7 +27,8 @@ def dbinsert(hpdict):
 		c.execute('''CREATE TABLE ENTITIES
 		       (NAME TEXT PRIMARY KEY     NOT NULL,
 		        TAGS          TEXT,
-		       LINKS         TEXT);''')
+		       LINKS         TEXT
+		       )''')
 
 	for entity in hpdict.values():
 		#0 index = name, 1st index = description, 2nd index = link
@@ -36,7 +37,7 @@ def dbinsert(hpdict):
 		get_entity = c.execute("SELECT * FROM ENTITIES WHERE NAME='" + entity[0][0] + "' ")
 		# Ensure that entry with that name doesn't already exist
 		if cursorlen(get_entity) == 0:
-			c.execute("INSERT INTO ENTITIES(NAME, TAGS, LINKS) VALUES ('" + name_no_apostrophes + "', '" + desc_no_apostrophes + "', '" + entity[0][2] + "')")
+			c.execute("INSERT INTO ENTITIES(NAME, TAGS, LINKS) VALUES (?, ?, ?)", (name_no_apostrophes, desc_no_apostrophes, entity[0][2]))
 
 	conn.commit()
 	conn.close()
@@ -48,16 +49,24 @@ def dbquery(query):
 	print type(query)
 	conn = sqlite3.connect("ASG.db")
 	wordlist = set(query.split(" "))
-	rows = []
+	d = {}
 	with conn:
 		c = conn.cursor()
-		for word in wordlist:
-			c.execute("SELECT * FROM ENTITIES WHERE NAME LIKE '%" + word + "%' OR TAGS LIKE '%" + word + "%' OR LINKS LIKE '%" + word + "%'")
-			rows = rows + c.fetchall()
+		# If we can get Fulltext extension: http://dev.mysql.com/doc/refman/5.0/en/fulltext-natural-language.html
+		
+		#c.execute(''' SELECT a.* from (SELECT *, 1 as rank FROM ENTITIES WHERE NAME LIKE '%:q%' UNION SELECT *, 2 as rank FROM ENTITIES WHERE TAGS LIKE '%:q%') a order by a.rank asc;''', {"q": query})
 
-	conn.commit()
+		c.execute("SELECT * FROM ENTITIES WHERE NAME LIKE '%" + query + "%' OR TAGS LIKE '%" + query + "%' OR LINKS LIKE '%" + query + "%' LIMIT 100")
+		result = c.fetchall()
+		if not result:
+			return 0
+		print "RESULT"
+		print result
+		c = 0
+		for entity in result:
+			d[c] = [[i for i in entity]]
+			c = c + 1
+
+	#conn.commit()
 	conn.close()
-	if rows:
-		return {0: rows}
-	else:
-		return 0
+	return d

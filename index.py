@@ -46,6 +46,7 @@ def secondpage():
 	    except Exception, e:
 	        print e
 	return render_template('secondpage.html')
+
 @app.route('/dbsecondpage')
 def dbsecondpage():
 	return render_template('dbsecondpage.html')
@@ -83,7 +84,7 @@ def thirdpage():
 		
 		#create dictionary of named entities	
 		else:
-			namedidentities = gr()
+			namedidentities, upload_time = gr()
 			print "namedidentities:"
 			print namedidentities
 			for i in namedidentities.values():
@@ -104,6 +105,10 @@ def thirdpage():
 			else:
 				return render_template('emptysearch.html')
 	  	return redirect(url_for('index'))
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
 #run app and use debugger to check Flask errors  
 if __name__ == '__main__':
