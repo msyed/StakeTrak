@@ -17,7 +17,7 @@ def wikipediagrabber(filepath):
 	myjson = r.json()
 	identifiers = []
 	dictionary={}
-	
+	filename = filepath.replace("test_files","")
 	#iterate through each named entity
 	for i in range(0, len(myjson['entities'])):
 		
@@ -30,7 +30,7 @@ def wikipediagrabber(filepath):
 			if identifier not in identifiers:
 				identifiers.append(identifier)
 				entry = myjson['entities'][i]['original_text']
-				dictionary[myjson['entities'][i]['additional_information']['wikidata_id']] = [myjson['entities'][i]['original_text'], wikipedia.summary(entry, sentences = 5), myjson['entities'][i]['additional_information']['wikipedia_eng']]
+				dictionary[myjson['entities'][i]['additional_information']['wikidata_id']] = [entry, wikipedia.summary(entry, sentences = 5), myjson['entities'][i]['additional_information']['wikipedia_eng'],filename]
  		
  		#do not add to dictionary if they do not have wikipedia pages		
 		except (wikipedia.exceptions.DisambiguationError, wikipedia.exceptions.PageError) as e:
