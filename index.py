@@ -2,7 +2,7 @@
 import os, shutil
 
 #web application framework written in python
-from flask import Flask, session, request, url_for, make_response, redirect, render_template
+from flask import Flask, abort, session, request, url_for, make_response, redirect, render_template
 
 #to restrict types of files
 from werkzeug import secure_filename
@@ -59,17 +59,17 @@ def login():
 #render homepage
 @app.route('/index', methods=['GET', 'POST'])
 def index():
-
 	if 'username' in session:
 		# logged in!
 		return render_template('index.html', username=session['username'])
 	else:
-		return redirect('login')
+		return abort(404)
 
 #render second page
 @app.route('/secondpage', methods=['POST'])
 def secondpage():
-	
+	if not 'username' in session:
+		return abort(404)
 	#adapted from http://stackoverflow.com/questions/185936/delete-folder-contents-in-python
 	#delete all old files when renderding second page to ensure new upload screen for user
 	for the_file in os.listdir(UPLOAD_FOLDER):
@@ -84,12 +84,15 @@ def secondpage():
 @app.route('/dbsecondpage')
 
 def dbsecondpage():
+	if not 'username' in session:
+		return abort(404)
 	return render_template('dbsecondpage.html')
 
 #upload files, adapted from http://flask.pocoo.org/docs/0.10/patterns/fileuploads/
 @app.route('/uploader', methods=['POST'])
 def uploader():
-
+	if not 'username' in session:
+		return abort(404)
 	#ensure POST request
 	if request.method == 'POST':
 		files = request.files.getlist('file')
@@ -102,15 +105,16 @@ def uploader():
 				f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 				filenames.append(filename)
 		return 'OKAY'
-
+	return abort(404)
 	#prevent GET requests for second page
-	if request.method == 'GET':
-	  	return redirect(url_for('index'))
+	# if request.method == 'GET':
+	#   	return redirect(url_for('index'))
 
 #render third page
 @app.route('/thirdpage', methods=['GET', 'POST'])
 def thirdpage():
-
+	if not 'username' in session:
+		return abort(404)
 	#render error screen if user does not upload files
 	if request.method == 'POST':
 		if not os.listdir(UPLOAD_FOLDER):
@@ -143,6 +147,8 @@ def thirdpage():
 
 @app.route("/logout", methods=['POST'])
 def logout():
+	if not 'username' in session:
+		return abort(404)
 	if request.method == 'POST':
 		if 'username' in session:
 			session.pop('username', None)
