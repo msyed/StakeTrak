@@ -66,7 +66,7 @@ def index():
 		return abort(404)
 
 #render second page
-@app.route('/secondpage', methods=['POST'])
+@app.route('/secondpage', methods=['GET', 'POST'])
 def secondpage():
 	if not 'username' in session:
 		return abort(404)
