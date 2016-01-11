@@ -23,7 +23,7 @@ from pdfminer.layout import LAParams
 from pdfminer.pdfpage import PDFPage
 from cStringIO import StringIO
 
-def get_text(filepath):
+def extractText(filepath):
 	extension = filepath.split(".")[-1]
 	if extension.lower() == "pdf":
 		# http://stackoverflow.com/questions/26494211/extracting-text-from-a-pdf-file-using-pdfminer-in-python
@@ -66,7 +66,7 @@ def get_text(filepath):
 			return f.read()
 
 
-print get_text('Welcome to the Python docx module.docx')
-print "_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-"
-print get_text('index.py')
+# print get_text('Welcome to the Python docx module.docx')
+# print "_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-"
+# print get_text('index.py')
 
