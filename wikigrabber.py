@@ -17,7 +17,7 @@ def wikipediagrabber(filepath):
 	myjson = r.json()
 	identifiers = []
 	dictionary={}
-	filename = filepath.replace("test_files","")
+	filename = filepath.replace("test_files/","")
 	#iterate through each named entity
 	for i in range(0, len(myjson['entities'])):
 		
