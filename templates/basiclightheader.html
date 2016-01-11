@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>HEADER FOR DA BEST TEAM IN THE</title>
+
+	<link rel="stylesheet" href="../static/css/demo.css">
+	<link rel="stylesheet" href="../static/css/header-basic-light.css">
+	<link href='http://fonts.googleapis.com/css?family=Cookie' rel='stylesheet' type='text/css'>
+
+</head>
+
+<body>
+
+<header class="header-basic-light">
+
+	<div class="header-limiter">
+
+		<h1><a href="#">Stake<span>Trak</span></a></h1>
+
+		<nav>
+			<a href="#">Home</a>
+			<a href="#">About</a>
+			<a href="#">Faq</a>
+			<a href="#">Contact</a>
+			<a href="#" class="selected">Logout</a>
+			<form id="logout" method="post" action="{{ url_for('logout') }}">
+        		<button type="submit" class="btn btn-dark btn-lg">log out</button>
+      		</form>
+		</nav>
+	</div>
+
+</header>
+
+	<!-- The content of your page would go here. -->
+	<br>
+      {% block content %}{% endblock %}
+    <br>
+
+<footer>
+
+StateTrak, an analytics team for understanding key stakeholders
+
+</footer>
+
+</body>
+
+</html>

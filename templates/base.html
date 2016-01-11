@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>Template for all StakeTrak Pages</title>
+
+	<link rel="stylesheet" href="../static/css/demo.css">
+	<link rel="stylesheet" href="../static/css/header-basic-light.css">
+	<link href='http://fonts.googleapis.com/css?family=Cookie' rel='stylesheet' type='text/css'>
+
+</head>
+
+<body>
+	<header class="header-basic-light">
+
+		<div class="header-limiter">
+
+			<h1><a href="#">Stake<span>Trak</span></a></h1>
+
+			<nav>
+				<a href="#">
+					<form id="home"  method="post" action="{{ url_for('index') }}">
+	        		<button type="submit" >Home</button>
+	      			</form>
+	      		</a>
+				<a href="http://staketrak.us/">About</a>
+				<a href="https://www.youtube.com/watch?v=qYZF6oIZtfc">FAQs</a>
+				<a href="#">Contact</a>
+				<a>
+					<form id="logout" class="btn btn-white btn-lg" method="post" action="{{ url_for('logout') }}">
+	        		<button type="submit" >Logout</button>
+	      			</form>
+	      		</a>
+			</nav>
+		</div>
+
+	</header>
+
+		<!-- The content of your page would go here. -->
+		<br>
+	      {% block content %}{% endblock %}
+	    <br>
+
+	<footer text-align="center">
+
+	<center>StateTrak, an analytics team for understanding key stakeholders</center>
+
+	</footer>
+
+</body>
+
+</html>
