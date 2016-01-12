@@ -10,11 +10,30 @@ def extract_entities(text):
 				print chunk.node, ' '.join(c[0] for c in chunk.leaves())
 
 
-
+# This function replaces HP's algorithm. Given a text string, get all the named entities.
+# Must account for the fact that if two or more adjacent words are proper nouns, then each proper
+# noun together likely corresponds to a particular proper noun 
+# That is: [('Barack', 'NNP'), ('Obama', 'NNP')] will become the keyword 'Barack Obama'
 def extract_entities2(text):
 	t = text.decode('utf-8')
 	pos = nltk.pos_tag(nltk.word_tokenize(t))
-	keywords = [noun for noun in pos if (noun[1] in ['NNP', 'NNPS'])]
+	i = 0
+	temp = ""
+	keywords = []
+	while i < len(pos):
+		if pos[i][1] in ['NNP', 'NNPS']:
+			if temp:
+				temp = temp + " " + pos[i][0]
+			else:
+				temp = pos[i][0]
+		else:
+			if temp:
+				keywords.append(temp)
+				temp = ""
+		i = i + 1
+	if temp:
+		keywords.append(temp)
+
 	return keywords
 
 ##let the fun begin!##
@@ -29,14 +48,6 @@ def processLanguage(text):
             #namedEnt.draw()
     except Exception, e:
         print str(e)
-
-def print_tree(sentence):
-	t = nltk.corpus.treebank.parsed_sents('wsj_0001.mrg')[0]
-	t.draw()
-
-def view_pos(text):
-    pos = nltk.pos_tag(nltk.word_tokenize(text))
-    return pos
 
 #exampleArray = ['The incredibly intimidating NLP scares people away who are sissies.']
 
