@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
+{% block content %}
+
 <html lang="en">
   <!-- Adapted from Twitter Bootstrap template at http://startbootstrap.com/template-overviews/agency/--> 
   <head>
@@ -31,7 +33,7 @@
         <h1>StakeTrak</h1>
         <h3>Find, Analyze, and Search the People in Your Documents</h3>
         <br>
-
+        
         <!-- button for second page -->
         <div id="options-container">
           <a href="/secondpage" class="btn btn-dark btn-lg" id="add-new-files">Add New Files</a>
@@ -46,9 +48,8 @@
           <a class="btn btn-dark btn-lg" id="go-back">Go Back</a>
         </form> 
       </div>
-      <form id="logout" method="post" action="{{ url_for('logout') }}">
-        <button type="submit" class="btn btn-dark btn-lg">log out</button>
-      </form>
     </header>
   </body>  
 </html>  
+
+{% endblock %}

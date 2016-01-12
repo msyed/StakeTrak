@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
+{% block content %}
+
 <html lang="en">
   <!-- Adapted from Twitter Bootstrap template at http://startbootstrap.com/template-overviews/grayscale/--> 
   <head>
@@ -10,13 +12,19 @@
 
     <title>StakeTrak</title>
 
+     
     <link href="{{ url_for('static', filename='') }}css/bootstrap.min.css" rel="stylesheet">
+    
     <link href="{{ url_for('static', filename='') }}css/grayscale.css" rel="stylesheet">
-    <link href="{{ url_for('static', filename='') }}font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"> 
+
+    <link href="{{ url_for('static', filename='') }}font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    
     <link href="{{ url_for('static', filename='') }}css/dropzone.css" rel="stylesheet">
     <link href="{{ url_for('static', filename='') }}css/basic.css" rel="stylesheet">
     <link href="{{ url_for('static', filename='') }}css/custom.css" rel="stylesheet">
   </head>
+
+  
   <body>
     
     <section id="about" class="container content-section text-center"> 
@@ -48,4 +56,5 @@
         <script type="text/javascript" src="{{ url_for('static', filename='') }}js/dropzone.js"></script>
     </section>
   </body>
-</html> 
+
+{% endblock %}
