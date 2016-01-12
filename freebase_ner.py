@@ -4,6 +4,8 @@ import nltk
 import re
 import requests
 
+# This code comes from: https://gist.github.com/shlomibabluki/6333170
+
 # Add your freebase key here
 # If you don't have one, register at https://code.google.com/apis/console
 FREEBASE_KEY = "AIzaSyC9ta4LJXt7rZ5UrGMYiJ05MqacQgNz47M"
