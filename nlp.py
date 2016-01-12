@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # pip install numpy
 import nltk, re, time
 from extractText import extractText
