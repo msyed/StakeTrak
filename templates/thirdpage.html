@@ -56,17 +56,17 @@
               <br>
 
               <!-- provide name of person-->                             
-              <span class="name"> {% print info[0][0] %} </span>
+              <span class="name"> {% print info[0].decode('utf-8') %} </span>
               <hr class="star-light">
               <div class="row">
 
                 <!-- provide wikipedia summary-->                           
-                <p> {% print info[0][1] %} <p>
+                <p> {% print info[1] %} <p>
 
                 <!-- provide link to wikipedia article in red-->
-                <a href="{% print info[0][2] %}" style="color: #CC0000">Full Wikipedia Article</a>
+                <a href="{% print info[2] %}" style="color: #CC0000">Full Wikipedia Article</a>
 
-                <p> Found in {% print info[0][3] %} <p>
+                <p> Found in {% print info[3] %} <p>
                   
                 <!-- line breaks following each entry -->
                 <br> 

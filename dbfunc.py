@@ -7,9 +7,7 @@ def cursorlen(cursor):
 		return 1
 	return c
 
-def dbinsert(hpdict):
-	print "hpdict:"
-	print hpdict
+def dbinsert(name, summary, keyword, location):
 
 	conn = sqlite3.connect("ASG.db")
 	c = conn.cursor()
@@ -26,18 +24,18 @@ def dbinsert(hpdict):
 		print "ABOUT TO CREATE A TABLE!"
 		c.execute('''CREATE TABLE ENTITIES
 		       (NAME TEXT PRIMARY KEY     NOT NULL,
-		        TAGS         TEXT,
-		       SUMMARY         TEXT
-		       LOCATION 		 TEXT)''')
+		        SUMMARY         TEXT,
+		       LOCATION         TEXT,
+		       TAGS		 TEXT)''')
 
-	for entity in hpdict.values():
+
 		#0 index = name, 1st index = description, 2nd index = link
-		name_no_apostrophes = entity[0][0].replace("'", "")
-		desc_no_apostrophes = entity[0][1].replace("'", "")
-		get_entity = c.execute("SELECT * FROM ENTITIES WHERE NAME='" + entity[0][0] + "' ")
+		#name_no_apostrophes = entity[0][0].replace("'", "")
+		#desc_no_apostrophes = entity[0][1].replace("'", "")
+		get_entity = c.execute("SELECT * FROM ENTITIES WHERE NAME='" + name + "' ")
 		# Ensure that entry with that name doesn't already exist
 		if cursorlen(get_entity) == 0:
-			c.execute("INSERT INTO ENTITIES(NAME, TAGS, LINKS, ARTICLE) VALUES (?, ?, ?, ?)", (name_no_apostrophes, desc_no_apostrophes, entity[0][2], entity[0][3]))
+			c.execute("INSERT INTO ENTITIES(NAME, SUMMARY, TAGS, LOCATION) VALUES (?, ?, ?, ?)", (name, summary, keyword, location))
 
 	conn.commit()
 	conn.close()
