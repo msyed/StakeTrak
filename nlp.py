@@ -69,12 +69,6 @@ def processLanguage(text):
 
 #exampleArray = ['The incredibly intimidating NLP scares people away who are sissies.']
 
-
-x = extractText('../W.O./Readable/water.org notes.docx')
-
-print extract_entities2(x)
-
-
 # print view_pos(x)
 #print_tree(exampleArray[0])
 

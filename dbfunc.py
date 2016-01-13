@@ -26,9 +26,9 @@ def dbinsert(hpdict):
 		print "ABOUT TO CREATE A TABLE!"
 		c.execute('''CREATE TABLE ENTITIES
 		       (NAME TEXT PRIMARY KEY     NOT NULL,
-		        TAGS          TEXT,
-		       LINKS         TEXT
-		       ARTICLE 		 TEXT)''')
+		        TAGS         TEXT,
+		       SUMMARY         TEXT
+		       LOCATION 		 TEXT)''')
 
 	for entity in hpdict.values():
 		#0 index = name, 1st index = description, 2nd index = link
