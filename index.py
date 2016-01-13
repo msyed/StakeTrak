@@ -122,7 +122,7 @@ def thirdpage():
 		
 		#create dictionary of named entities	
 		else:
-			namedidentities = gr()
+			namedidentities, upload_time = gr()
 			print "namedidentities:"
 			print namedidentities
 			for i in namedidentities.values():
