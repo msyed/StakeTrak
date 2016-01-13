@@ -4,19 +4,37 @@ import nltk, re, time
 from extractText import extractText
 
 def extract_entities(text):
+	#t = text.decode('utf-8')
 	for sent in nltk.sent_tokenize(text):
 		for chunk in nltk.ne_chunk(nltk.pos_tag(nltk.word_tokenize(sent))):
-			if hasattr(chunk, 'node'):
-				print chunk.node, ' '.join(c[0] for c in chunk.leaves())
+			print chunk
+			# if hasattr(chunk, 'node'):
+			# 	print chunk.node, ' '.join(c[0] for c in chunk.leaves())
 
+
+def is_valid(item):
+	holidays = ['thanksgiving', 'christmas', 'halloween', "new year's day", "valentine's day", "st. patrick's day", "4th of july", "fourth of july"]
+	days_of_week = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+	months = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'decemeber']
+	common = []
+	with open('1000-most-common.txt') as f:
+		while True:
+			l = f.readline()
+			if l:
+				common.append(l.rstrip())
+			else:
+				break
+	if item.lower() in (holidays + days_of_week + months + common):
+		return False
+	return True
 
 # This function replaces HP's algorithm. Given a text string, get all the named entities.
 # Must account for the fact that if two or more adjacent words are proper nouns, then each proper
 # noun together likely corresponds to a particular proper noun 
 # That is: [('Barack', 'NNP'), ('Obama', 'NNP')] will become the keyword 'Barack Obama'
 def extract_entities2(text):
-	t = text.decode('utf-8')
-	pos = nltk.pos_tag(nltk.word_tokenize(t))
+	#t = text.decode('utf-8')
+	pos = nltk.pos_tag(nltk.word_tokenize(text))
 	i = 0
 	temp = ""
 	keywords = []
@@ -28,12 +46,12 @@ def extract_entities2(text):
 				temp = pos[i][0]
 		else:
 			if temp:
-				keywords.append(temp)
+				if is_valid(temp):
+					keywords.append(temp)
 				temp = ""
 		i = i + 1
 	if temp:
 		keywords.append(temp)
-
 	return keywords
 
 ##let the fun begin!##
@@ -52,10 +70,10 @@ def processLanguage(text):
 #exampleArray = ['The incredibly intimidating NLP scares people away who are sissies.']
 
 
-x = extractText('church.txt')
+x = extractText('../W.O./Readable/water.org notes.docx')
 
-# print extract_entities(x)
 print extract_entities2(x)
+
 
 # print view_pos(x)
 #print_tree(exampleArray[0])
