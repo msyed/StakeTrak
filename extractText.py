@@ -1,6 +1,7 @@
 # pip install nltk
 # pip install pyinstaller
 # pip install pdfminer
+# pip install lxml
 
 # If those dont work, try
 # pip install python-docx
