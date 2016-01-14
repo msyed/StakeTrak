@@ -128,6 +128,9 @@ def thirdpage():
 
 	#get file names from folder of files
 		else:
+
+			count = 0
+			namedidentities = {}
 			filenames = os.listdir('test_files/') 
 			
 			#remove hidden files
@@ -138,21 +141,23 @@ def thirdpage():
 			#iterate through each file and run wikigrabber function	
 			for info in filenames:
 				#create dictionary of named entities	
-				namedidentities = {}
-				count = 0
 				summarizer = FrequencySummarizer()
 				text = extractText(info)
 				summary = summarizer.summarize(text, 3)
+				newsummary = ""
+				for i in summary:
+					newsummary += i
 				entities = nlp.extract_entities2(text)
 				location = info.replace("test_files/","")
 			 	keywords = "" #insert Caetanos stuff
 			 	articles = "" #insert Austin's stuff the 
 				for entity in entities:
-					dbinsert(entity, summary, keywords, location)
-					namedidentities[count] = [entity, summary, keywords, location]
+					namedidentities[count] = [entity, newsummary, keywords, location]
 					count += 1 
 				# pass named entities to template
-				return render_template('thirdpage.html', wiki=namedidentities)
+				#print namedidentities.values()
+			dbinsert(namedidentities)
+			return render_template('thirdpage.html', wiki=namedidentities)
 		
 	#prevent GET requests for third page
 	if request.method == 'GET':

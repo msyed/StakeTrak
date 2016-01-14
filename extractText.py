@@ -63,7 +63,7 @@ def extractText(filepath):
 	else:
 		# simply open and return file as string.
 		with open(filepath) as f:
-			return f.read()
+			return f.read().decode('utf-8')
 
 
 # print get_text('Welcome to the Python docx module.docx')

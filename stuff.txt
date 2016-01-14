@@ -1,0 +1,7 @@
+summarizer = FrequencySummarizer()
+				text = extractText(info)
+				summary = summarizer(extractText(text, 3))
+				entities = nlp.extract_entities2(text)
+				location = info.replace("test_files/","")
+			 	keywords = "" #insert Caetanos stuff
+			 	articles = "" #insert Austin's stuff the 
