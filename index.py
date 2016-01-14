@@ -12,6 +12,12 @@ from wikigrabber import gatherer as gr
 
 from dbfunc import dbinsert, dbquery
 
+from summarizer import FrequencySummarizer
+
+import nlp
+
+from extractText import extractText
+
 #define constants
 UPLOAD_FOLDER = 'test_files'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'docx', 'doc'])
@@ -119,19 +125,40 @@ def thirdpage():
 	if request.method == 'POST':
 		if not os.listdir(UPLOAD_FOLDER):
 			return render_template('error.html')
-		
-		#create dictionary of named entities	
-		else:
-			namedidentities = gr()
-			print "namedidentities:"
-			print namedidentities
-			for i in namedidentities.values():
-				print i[0][0]
-			dbinsert(namedidentities)
 
-			# pass named entities to template
+	#get file names from folder of files
+		else:
+
+			count = 0
+			namedidentities = {}
+			filenames = os.listdir('test_files/') 
+			
+			#remove hidden files
+			for i in filenames:
+				if i[0] == '.':
+					filenames.remove(i)
+
+			#iterate through each file and run wikigrabber function	
+			for info in filenames:
+				#create dictionary of named entities	
+				summarizer = FrequencySummarizer()
+				text = extractText(info)
+				summary = summarizer.summarize(text, 3)
+				newsummary = ""
+				for i in summary:
+					newsummary += i
+				entities = nlp.extract_entities2(text)
+				location = info.replace("test_files/","")
+			 	keywords = "" #insert Caetanos stuff
+			 	articles = "" #insert Austin's stuff the 
+				for entity in entities:
+					namedidentities[count] = [entity, newsummary, keywords, location]
+					count += 1 
+				# pass named entities to template
+				#print namedidentities.values()
+			dbinsert(namedidentities)
 			return render_template('thirdpage.html', wiki=namedidentities)
-	
+		
 	#prevent GET requests for third page
 	if request.method == 'GET':
 		# if theres a query, return results
