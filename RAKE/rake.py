@@ -138,10 +138,10 @@ class Rake(object):
         sorted_keywords = sorted(keyword_candidates.iteritems(), key=operator.itemgetter(1), reverse=True)
 
         # sort out top 10 keywords
-        top_ten_words = [i[0] for i in sorted_keywords[:10]]
+        top_fifteen_words = [i[0] for i in sorted_keywords[:15]]
         #print toptenwords
         #return sorted_keywords
-        return top_ten_words
+        return top_fifteen_words
 
 if test:
     text = getText('elchapo.rtf')
