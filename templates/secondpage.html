@@ -11,7 +11,6 @@
     <meta name="author" content="">
 
     <title>StakeTrak</title>
-
      
     <link href="{{ url_for('static', filename='') }}css/bootstrap.min.css" rel="stylesheet">
     
@@ -22,6 +21,27 @@
     <link href="{{ url_for('static', filename='') }}css/dropzone.css" rel="stylesheet">
     <link href="{{ url_for('static', filename='') }}css/basic.css" rel="stylesheet">
     <link href="{{ url_for('static', filename='') }}css/custom.css" rel="stylesheet">
+
+    <script src="{{ url_for('static', filename='') }}js/jquery.js"></script>
+    <script>
+      $(document).ready(function() {
+        $('#submit-upload').on('click', function() {
+          console.log("click!");
+          var jqxhr = $.post("{{ url_for('thirdpage') }}" + "?apikey=rollthru").done(function(data, status, errorthrown) {
+            document.write(data);
+          }).fail(function(data, status, errorthrown) {
+            alert( "error: " + status + " problem: " + errorthrown );
+          })
+          var loadingIcon = new Image(); // HTML5 Constructor
+          loadingIcon.src = "{{ url_for('static', filename='') }}img/cube.gif";
+          loadingIcon.alt = 'loading-icon';
+          loadingIcon.width = 80;
+          loadingIcon.height = 80;
+          $('#file-dropzone').replaceWith(loadingIcon);
+        });
+      });
+    </script>
+
   </head>
 
   
@@ -29,7 +49,7 @@
     
     <section id="about" class="container content-section text-center"> 
       <!-- file drop zone -->
-      <div class="col-md-8 col-md-offset-2">
+      <div id="file-dropzone" class="col-md-8 col-md-offset-2">
         <h1>Drag and Drop Files</h1>
         <!-- put files in user's folder -->
         <form method="post" enctype=multipart/form-data action="{{ url_for('uploader') }}" class="dropzone">
@@ -39,8 +59,8 @@
         </form>
         <!-- process files in folder after submit button is pressed -->
         <br>
-        <form method="post" action="{{ url_for('thirdpage') }}">
-          <button type="submit", class="btn btn-warning cancel">SUBMIT</button>
+        <form>
+          <div id="submit-upload" class="btn btn-warning cancel">SUBMIT</div>
         </form>
 
       <!-- 

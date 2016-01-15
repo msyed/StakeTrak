@@ -69,6 +69,10 @@ def login():
 def index():
 	if 'username' in session:
 		# logged in!
+		print "RENDER_TEMPLATE:"
+		print render_template('index.html', username=session['username'])
+		print "USERNAME:"
+		print session['username']
 		return render_template('index.html', username=session['username'])
 	else:
 		return abort(404)
@@ -121,7 +125,7 @@ def uploader():
 #render third page
 @app.route('/thirdpage', methods=['GET', 'POST'])
 def thirdpage():
-	if not 'username' in session:
+	if (not request.args.get('apikey', '') == "rollthru") or (not 'username' in session):
 		return abort(404)
 	#render error screen if user does not upload files
 	if request.method == 'POST':
@@ -130,7 +134,6 @@ def thirdpage():
 
 	#get file names from folder of files
 		else:
-
 			count = 0
 			namedidentities = {}
 			filenames = os.listdir('test_files/') 
@@ -144,18 +147,20 @@ def thirdpage():
 			for info in filenames:
 				#create dictionary of named entities	
 				summarizer = FrequencySummarizer()
-				text = extractText(info)
+				print "FILEPATH"
+				print info
+				text = extractText("test_files/" + info)
 				summary = summarizer.summarize(text, 3)
 				newsummary = ""
 				for i in summary:
 					newsummary += i
 				entities = nlp.extract_entities2(text)
-				location = info.replace("test_files/","")
+				#location = info.replace("test_files/","")
 			 	keywordobj = rake.Rake("RAKE/SmartStoplist.txt")
 			 	keywords = keywordobj.run(text)
 			 	articles = "" #insert Austin's stuff the 
 				for entity in entities:
-					namedidentities[count] = [entity, newsummary, keywords, location]
+					namedidentities[count] = [entity, newsummary, keywords, info]
 					count += 1 
 				# pass named entities to template
 				#print namedidentities.values()
