@@ -19,7 +19,21 @@ def dbinsert(hpdict):
 		c.execute('''CREATE TABLE ENTITIES
 		       (NAME TEXT PRIMARY KEY     NOT NULL,
 		        SUMMARY         TEXT,
-		       KEYWORD        TEXT,
+		       KEYWORD1        TEXT,
+		       KEYWORD2       TEXT,
+		       KEYWORD3        TEXT,
+		       KEYWORD4        TEXT,
+		       KEYWORD5        TEXT,
+		       KEYWORD6        TEXT,
+		       KEYWORD7        TEXT,
+		       KEYWORD8        TEXT,
+		       KEYWORD9        TEXT,
+		       KEYWORD10        TEXT,
+		       KEYWORD11       TEXT,
+		       KEYWORD12        TEXT,
+		       KEYWORD13        TEXT,
+		       KEYWORD14       TEXT,
+		       KEYWORD15       TEXT,
 		       LOCATION 		 TEXT)''')
 
 	for entity in hpdict.values():

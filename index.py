@@ -18,6 +18,8 @@ import nlp
 
 from extractText import extractText
 
+from RAKE import rake
+
 #define constants
 UPLOAD_FOLDER = 'test_files'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'docx', 'doc'])
@@ -149,7 +151,8 @@ def thirdpage():
 					newsummary += i
 				entities = nlp.extract_entities2(text)
 				location = info.replace("test_files/","")
-			 	keywords = "" #insert Caetanos stuff
+			 	keywordobj = rake.Rake("RAKE/SmartStoplist.txt")
+			 	keywords = keywordobj.run(text)
 			 	articles = "" #insert Austin's stuff the 
 				for entity in entities:
 					namedidentities[count] = [entity, newsummary, keywords, location]
