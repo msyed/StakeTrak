@@ -2,6 +2,8 @@ import sqlite3
 
 from heapq import nlargest
 
+import urllib
+
 MAX_KEYS_PER_ENTITY = 20
 
 # returns 0 if empty query, 1 if query returned stuff
@@ -83,32 +85,35 @@ def dbinsert(hpdict):
 
 
 def dbquery(query):
+	q = urllib.unquote(query).decode('utf8') 
 	print "QUERY:"
 	print query
 	print type(query)
 	conn = sqlite3.connect("ASG.db")
-	wordlist = set(query.split(" "))
+	wordlist = set(q.split(" "))
 	d = {}
 	with conn:
 		c = conn.cursor()
 		# If we can get Fulltext extension: http://dev.mysql.com/doc/refman/5.0/en/fulltext-natural-language.html
 		
 		#c.execute(''' SELECT a.* from (SELECT *, 1 as rank FROM ENTITIES WHERE NAME LIKE '%:q%' UNION SELECT *, 2 as rank FROM ENTITIES WHERE TAGS LIKE '%:q%') a order by a.rank asc;''', {"q": query})
-		c.execute("SELECT NAME FROM TAGS WHERE TAG=? LIMIT 100", (query,))
+		c.execute("SELECT NAME FROM TAGS WHERE TAG=? LIMIT 100", (q,))
 		tag_result = c.fetchall()
 		tag_entities = []
 		for name in tag_result:
-			c.execute("SELECT * FROM ENTITIES WHERE NAME=?", (name,))
+			c.execute("SELECT * FROM ENTITIES WHERE NAME=?", name)
 			tag_entities.append(c.fetchall())
-		c.execute("SELECT * FROM ENTITIES WHERE NAME LIKE '%" + query + "%' OR SUMMARY LIKE '%" + query + "%' OR LOCATION LIKE '%" + query + "%' LIMIT 100")
+		c.execute("SELECT * FROM ENTITIES WHERE NAME LIKE '%" + q + "%' OR SUMMARY LIKE '%" + q + "%' OR LOCATION LIKE '%" + q + "%' LIMIT 100")
 		name_result = c.fetchall()
 		print "TAG_RESULT"
 		print tag_result
 		print "NAME_RESULT"
 		print name_result
+		print "TAG_ENTITIES"
+		print tag_entities
 		c = 0
-		for entity in tag_entities:
-			d[c] = [i for i in entity]
+		for entity_list in tag_entities:
+			d[c] = [i for i in entity_list[0]]
 			c = c + 1
 
 		for entity in name_result:
