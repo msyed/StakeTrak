@@ -70,7 +70,7 @@ def index():
 	if 'username' in session:
 		# logged in!
 		print "RENDER_TEMPLATE:"
-		print render_template('index.html', username=session['username'])
+		#print render_template('index.html', username=session['username'])
 		print "USERNAME:"
 		print session['username']
 		return render_template('index.html', username=session['username'])
@@ -125,14 +125,15 @@ def uploader():
 #render third page
 @app.route('/thirdpage', methods=['GET', 'POST'])
 def thirdpage():
-	if (not request.args.get('apikey', '') == "rollthru") or (not 'username' in session):
+	if not ((request.args.get('apikey', '') == "rollthru") or ('username' in session)):
+		print (not 'username' in session)
 		return abort(404)
 	#render error screen if user does not upload files
 	if request.method == 'POST':
 		if not os.listdir(UPLOAD_FOLDER):
 			return render_template('error.html')
 
-	#get file names from folder of files
+		#get file names from folder of files
 		else:
 			count = 0
 			namedidentities = {}
