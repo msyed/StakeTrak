@@ -14,7 +14,7 @@ from dbfunc import dbinsert, dbquery
 
 from summarizer import FrequencySummarizer
 
-import nlp
+import nlp3
 
 from extractText import extractText
 
@@ -155,7 +155,7 @@ def thirdpage():
 				newsummary = ""
 				for i in summary:
 					newsummary += i
-				entities = nlp.extract_entities2(text)
+				entities = nlp3.get_entity_names(text)
 				#location = info.replace("test_files/","")
 			 	keywordobj = rake.Rake("RAKE/SmartStoplist.txt")
 			 	keywords = keywordobj.run(text)
