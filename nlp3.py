@@ -18,7 +18,7 @@ def extract_entity_names(t):
 
 def get_entity_names(text):
     entity_names = []
-    sentences = nltk.sent_tokenize(sample)
+    sentences = nltk.sent_tokenize(text)
     tokenized_sentences = [nltk.word_tokenize(sentence) for sentence in sentences]
     tagged_sentences = [nltk.pos_tag(sentence) for sentence in tokenized_sentences]
     chunked_sentences = nltk.ne_chunk_sents(tagged_sentences, binary=True)
