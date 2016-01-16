@@ -25,15 +25,16 @@
 			<nav>
 				<a href="#">
 					<form id="home"  method="post" action="{{ url_for('index') }}">
-	        		<button type="submit" >Home</button>
+	        		<button type="submit">Home</button>
 	      			</form>
 	      		</a>
+	      		<!--
 				<a href="http://staketrak.us/">About</a>
 				<a href="https://www.youtube.com/watch?v=qYZF6oIZtfc">FAQs</a>
-				<a href="#">Contact</a>
+				<a href="#">Contact</a>-->
 				<a>
-					<form id="logout" class="btn btn-white btn-lg" method="post" action="{{ url_for('logout') }}">
-	        		<button type="submit" >Logout</button>
+					<form id="logout" method="post" action="{{ url_for('logout') }}">
+	        		<button type="submit">Logout</button>
 	      			</form>
 	      		</a>
 			</nav>
@@ -42,15 +43,15 @@
 	</header>
 
 		<!-- The content of your page would go here. -->
-		<br>
+		
 	      {% block content %}{% endblock %}
-	    <br>
+	    
 
 	<footer text-align="center">
 
 	<center>StateTrak, an analytics team for understanding key stakeholders</center>
 
-	</footer>
+	</footer> 
 
 </body>
 
