@@ -97,7 +97,10 @@ def dbquery(query):
 		# If we can get Fulltext extension: http://dev.mysql.com/doc/refman/5.0/en/fulltext-natural-language.html
 		
 		#c.execute(''' SELECT a.* from (SELECT *, 1 as rank FROM ENTITIES WHERE NAME LIKE '%:q%' UNION SELECT *, 2 as rank FROM ENTITIES WHERE TAGS LIKE '%:q%') a order by a.rank asc;''', {"q": query})
-		c.execute("SELECT NAME FROM TAGS WHERE TAG=? LIMIT 100", (q,))
+		try:
+			c.execute("SELECT NAME FROM TAGS WHERE TAG LIKE '%" + q + "%' LIMIT 100")
+		except sqlite3.OperationalError:
+			return 0
 		tag_result = c.fetchall()
 		tag_entities = []
 		for name in tag_result:
