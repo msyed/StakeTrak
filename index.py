@@ -16,7 +16,7 @@ from dbfunc import dbinsert, dbquery
 
 from summarizer import FrequencySummarizer
 
-import nlp
+import nlp3
 
 from extractText import extractText
 
@@ -72,7 +72,7 @@ def index():
 	if 'username' in session:
 		# logged in!
 		print "RENDER_TEMPLATE:"
-		print render_template('index.html', username=session['username'])
+		#print render_template('index.html', username=session['username'])
 		print "USERNAME:"
 		print session['username']
 		return render_template('index.html', username=session['username'])
@@ -127,14 +127,15 @@ def uploader():
 #render third page
 @app.route('/thirdpage', methods=['GET', 'POST'])
 def thirdpage():
-	if (not request.args.get('apikey', '') == "rollthru") or (not 'username' in session):
+	if not ((request.args.get('apikey', '') == "rollthru") or ('username' in session)):
+		print (not 'username' in session)
 		return abort(404)
 	#render error screen if user does not upload files
 	if request.method == 'POST':
 		if not os.listdir(UPLOAD_FOLDER):
 			return render_template('error.html')
 
-	#get file names from folder of files
+		#get file names from folder of files
 		else:
 			count = 0
 			namedidentities = {}
@@ -156,13 +157,14 @@ def thirdpage():
 				newsummary = ""
 				for i in summary:
 					newsummary += i
-				entities = nlp.extract_entities2(text)
+				entities = nlp3.get_entity_names(text)
 				#location = info.replace("test_files/","")
 			 	keywordobj = rake.Rake("RAKE/SmartStoplist.txt")
 			 	keywords = keywordobj.run(text)
-			 	
-			 	for entity in entities:
-					namedidentities[count] = [entity, newsummary, keywords, info]
+
+			 	articles = "" #insert Austin's stuff the 
+				for entity in entities:
+					namedidentities[count] = [entity.lower(), newsummary, keywords, info]
 					count += 1 
 
 				# NOTE: REIMPLEMENT WHEN API CALL LIMIT GETS FIXED instead of above for loop
@@ -175,7 +177,7 @@ def thirdpage():
 			# pass named entities to template
 			# print namedidentities.values()
 			dbinsert(namedidentities)
-			return render_template('thirdpage.html', wiki=namedidentities)
+			return render_template('thirdpage.html', wiki=namedidentities, filenames1=filenames)
 		
 	#prevent GET requests for third page
 	if request.method == 'GET':

@@ -136,9 +136,10 @@ class Rake(object):
         keyword_candidates = generate_candidate_keyword_scores(phrase_list, word_scores)
 
         sorted_keywords = sorted(keyword_candidates.iteritems(), key=operator.itemgetter(1), reverse=True)
-
+        # print "sorted_keywords:"
+        # print sorted_keywords
         # sort out top 10 keywords
-        top_fifteen_words = [i[0] for i in sorted_keywords[:15]]
+        top_fifteen_words = [i for i in sorted_keywords[:15]]
         #print toptenwords
         #return sorted_keywords
         return top_fifteen_words

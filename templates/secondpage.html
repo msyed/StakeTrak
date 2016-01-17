@@ -30,7 +30,8 @@
           var jqxhr = $.post("{{ url_for('thirdpage') }}" + "?apikey=rollthru").done(function(data, status, errorthrown) {
             document.write(data);
           }).fail(function(data, status, errorthrown) {
-            alert( "error: " + status + " problem: " + errorthrown );
+            //alert( "error: " + status + " problem: " + errorthrown );
+            document.write(data.responseText);
           })
           $('#loading-icon').toggle();
           $('#file-dropzone').toggle();
