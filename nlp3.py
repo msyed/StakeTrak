@@ -16,7 +16,7 @@ def extract_entity_names(t):
     return entity_names
 
 
-def get_entity_names(text):
+def get_entity_names_sentences(text):
     entity_names = []
     sentences = nltk.sent_tokenize(text)
     tokenized_sentences = [nltk.word_tokenize(sentence) for sentence in sentences]
@@ -33,3 +33,20 @@ def get_entity_names(text):
 #print entity_names
 # return unique entity names
     return set(entity_names)
+
+# get sentences in which the person appears
+def sentextract(text, entity):
+    entity = entity.lower()
+    sentences = nltk.sent_tokenize(text)
+    tensent = [None] * 10
+    count = 0
+    for sent in sentences:
+        if entity in sent.lower() and count < 10:
+            tensent[count] = sent
+            count += 1
+    return tensent
+
+
+
+
+

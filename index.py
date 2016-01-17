@@ -166,7 +166,7 @@ def thirdpage():
 				# pass named entities to template
 				#print namedidentities.values()
 			dbinsert(namedidentities)
-			return render_template('thirdpage.html', wiki=namedidentities)
+			return render_template('thirdpage.html', wiki=namedidentities, filenames1=filenames)
 		
 	#prevent GET requests for third page
 	if request.method == 'GET':
