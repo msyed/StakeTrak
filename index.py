@@ -148,20 +148,23 @@ def thirdpage():
 			for info in filenames:
 				#create dictionary of named entities	
 				summarizer = FrequencySummarizer()
-				print "FILEPATH"
-				print info
 				text = extractText("test_files/" + info)
 				summary = summarizer.summarize(text, 3)
-				newsummary = ""
-				for i in summary:
-					newsummary += i
+				#newsummary = ""
+				#for i in summary:
+				#	newsummary += i
 				entities = nlp3.get_entity_names(text)
 				#location = info.replace("test_files/","")
 			 	keywordobj = rake.Rake("RAKE/SmartStoplist.txt")
 			 	keywords = keywordobj.run(text)
 			 	articles = "" #insert Austin's stuff the 
 				for entity in entities:
-					namedidentities[count] = [entity.lower(), newsummary, keywords, info]
+					entsum = ""
+					entitysummary = nlp3.sentextract(text, entity)
+					for i in entitysummary:
+						if i:
+							entsum += i + "... "
+					namedidentities[count] = [entity.lower(), entsum, keywords, info]
 					count += 1 
 				# pass named entities to template
 				#print namedidentities.values()

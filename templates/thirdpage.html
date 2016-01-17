@@ -60,14 +60,11 @@
               <div class="row">
 
                 <!-- provide wikipedia summary-->                           
-                <p> {% print "Article Summary: " + info[1] %} <p>
+                <p> {% print "Sentences in which Entities Appear: " + info[1] %} <p>
 
                 <!-- list of keywords in red -->
-
                 <br>
-                <p>{% print ( "Keywords: " + info[2][0][0] + ", " + info[2][1][0] + ", " + info[2][2][0] + ", " + info[2][3][0] + ", " + info[2][4][0]) %}</p>
-                <a href="{{ url_for('thirdpage') + '?q=' }}{% print info[2] %}" style="color: #CC0000">{% print info[2] %}</a>
-
+                <!--<p>{% print ( "Keywords: " + info[2][0][0] + ", " + info[2][1][0] + ", " + info[2][2][0] + ", " + info[2][3][0] + ", " + info[2][4][0]) %}</p>-->
                 <p> Found in {% print info[3] %} <p>
                   
                 <!-- line breaks following each entry -->
