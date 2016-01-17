@@ -167,7 +167,8 @@ def thirdpage():
 					for i in entitysummary:
 						if i:
 							entsum += i + "... "
-					namedidentities[count] = [entity.lower(), entsum, keywords, info]
+					# TODO could have more than one file with same name uploaded
+					namedidentities[count] = [entity.lower(), entsum, keywords, [info]]
 					count += 1 
 
 				# NOTE: REIMPLEMENT WHEN API CALL LIMIT GETS FIXED instead of above for loop

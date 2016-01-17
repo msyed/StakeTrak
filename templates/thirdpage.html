@@ -59,14 +59,21 @@
               <hr class="star-light">
               <div class="row">
 
-                <!-- provide wikipedia summary-->                           
-                <p> {% print "Sentences in which Entities Appear: " + info[1] %} <p>
+                <!-- provide summary--> 
+                {% print "Sentences in which Entities Appear: " %}
+                <p> 
+                  {% for sentence in info[1]: %}
+                    <p>
+                      {% print sentence %}
+                    </p>
+                  {% endfor %}
+                </p>
 
                 <br>
                 <!--<p>{% print ( "Keywords: " + info[2][0][0] + ", " + info[2][1][0] + ", " + info[2][2][0] + ", " + info[2][3][0] + ", " + info[2][4][0]) %}</p>-->
-                <p> Found in {% print info[3] %} <p>
+                <p> Found in {% print info[3] %} </p>
                 
-                <p> Recent News Articles <p>
+                <p> Recent News Articles </p>
                 <a href="{% print info[4] %}" style="color: #CC0000">{% print info[4] %}</a>
 
                 <a href="{% print info[5] %}" style="color: #CC0000">{% print info[5] %}</a>
