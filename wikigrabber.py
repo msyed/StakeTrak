@@ -38,6 +38,8 @@ def wikipediagrabber(filepath):
 
 	return dictionary
 
+
+
 #function creates dictionary for each file and merges them
 def gatherer():
 
