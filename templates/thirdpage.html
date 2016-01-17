@@ -48,7 +48,6 @@
       <div class="row">
         <body>
 
-        <a class="name" href="#page-top">Named People</a>
         <!-- iterate through each named person and print relevant details-->
         {% for id, info in wiki.iteritems(): %}
           <div class="name">
@@ -61,11 +60,12 @@
               <div class="row">
 
                 <!-- provide wikipedia summary-->                           
-                <p> {% print info[1] %} <p>
+                <p> {% print "Article Summary: " + info[1] %} <p>
 
                 <!-- list of keywords in red -->
-                <a href="{% print info[2] %}" style="color: #CC0000">{% print info[2] %}</a>
-
+                <br>
+                <p>{% print ( "Keywords: " + info[2][0][0] + ", " + info[2][1][0] + ", " + info[2][2][0] + ", " + info[2][3][0] + ", " + info[2][4][0]) %}</p>
+                <br>
                 <p> Found in {% print info[3] %} <p>
                   
                 <!-- line breaks following each entry -->
