@@ -10,6 +10,8 @@ from werkzeug import secure_filename
 #personal python function that returns names, wikipedia summaries, and wikipedia links in documents
 from wikigrabber import gatherer as gr
 
+from articles import getArticles
+
 from dbfunc import dbinsert, dbquery
 
 from summarizer import FrequencySummarizer
@@ -158,12 +160,20 @@ def thirdpage():
 				#location = info.replace("test_files/","")
 			 	keywordobj = rake.Rake("RAKE/SmartStoplist.txt")
 			 	keywords = keywordobj.run(text)
-			 	articles = "" #insert Austin's stuff the 
-				for entity in entities:
+			 	
+			 	for entity in entities:
 					namedidentities[count] = [entity, newsummary, keywords, info]
 					count += 1 
-				# pass named entities to template
-				#print namedidentities.values()
+
+				# NOTE: REIMPLEMENT WHEN API CALL LIMIT GETS FIXED instead of above for loop
+				# for entity in entities:
+				# 	# find articles based on each named entity
+				# 	articles = getArticles('%s' % entity)
+				# 	namedidentities[count] = [entity, newsummary, keywords, info, articles[0], articles[1], articles[2], articles[3], articles[4]]
+				# 	count += 1 
+
+			# pass named entities to template
+			# print namedidentities.values()
 			dbinsert(namedidentities)
 			return render_template('thirdpage.html', wiki=namedidentities)
 		
