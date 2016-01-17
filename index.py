@@ -161,7 +161,7 @@ def thirdpage():
 			 	keywords = keywordobj.run(text)
 			 	articles = "" #insert Austin's stuff the 
 				for entity in entities:
-					namedidentities[count] = [entity, newsummary, keywords, info]
+					namedidentities[count] = [entity.lower(), newsummary, keywords, info]
 					count += 1 
 				# pass named entities to template
 				#print namedidentities.values()

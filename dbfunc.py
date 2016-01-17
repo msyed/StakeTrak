@@ -108,12 +108,6 @@ def dbquery(query):
 			tag_entities.append(c.fetchall())
 		c.execute("SELECT * FROM ENTITIES WHERE NAME LIKE '%" + q + "%' OR SUMMARY LIKE '%" + q + "%' OR LOCATION LIKE '%" + q + "%' LIMIT 100")
 		name_result = c.fetchall()
-		print "TAG_RESULT"
-		print tag_result
-		print "NAME_RESULT"
-		print name_result
-		print "TAG_ENTITIES"
-		print tag_entities
 		c = 0
 		for entity_list in tag_entities:
 			d[c] = [i for i in entity_list[0]]
