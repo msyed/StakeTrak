@@ -51,7 +51,7 @@ def dbinsert(entity_dict):
 		if not c.fetchall():
 			for location in sum_key_loc[2]:
 				c.execute("INSERT INTO LOCATIONS(NAME, LOCATION) VALUES (?, ?)", (name_no_apostrophes, location))
-		for sentence in sum_ley_loc[0]:
+		for sentence in sum_key_loc[0]:
 			c.execute("INSERT INTO SUMMARIES(NAME, SENTENCE) VALUES (?, ?)", (name_no_apostrophes, sentence))
 
 		# Now deal with tags.
