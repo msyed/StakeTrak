@@ -81,6 +81,20 @@
                   <p>Found in <a href="{{ url_for('thirdpage') }}?q={{ location }}" style="color: #CC0000">{% print location %}</a></p>
                 {% endfor %}
                 </p>
+
+                <!--- insert text box here -->  
+                <p>
+                  <form action="/customdata/" method="POST">
+                    {% print "Comments:" %}
+                    <!--- name -->
+                    <br>
+                    <input type="text" style="color: #000000" name="customdata">
+                    <input type="submit" value="Submit">
+                  </form>
+                </p>
+
+
+
                 
 <!--                 <p> Recent News Articles </p>
                 <a href="{% print sum_key_loc[4] %}" style="color: #CC0000">{% print sum_key_loc[4] %}</a>
