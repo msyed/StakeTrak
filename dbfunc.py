@@ -14,7 +14,7 @@ def cursorlen(cursor):
 
 def dbinsert(entity_dict):
 	# hpdict
-	# {'Name': [['summary'], [('key', 2.4), ('words', 1.3)], ['location']]}
+	# {'Name': [['summary'], [('key', 2.4), ('words', 1.3)], ['location'], [other1, other2]]}
 
 	conn = sqlite3.connect("ASG.db")
 	c = conn.cursor()
@@ -34,20 +34,24 @@ def dbinsert(entity_dict):
 		# and each tag may appear more than once, but no pair may appear
 		# more than once!
 		c.execute('''CREATE TABLE TAGS
-		       (ENTITYID TEXT  NOT NULL,
+		       (ENTITYID INTEGER  NOT NULL,
 		       TAG TEXT NOT NULL,
 		       SCORE REAL)''')
 
 		c.execute('''CREATE TABLE SUMMARIES
-		       (ENTITYID TEXT  NOT NULL,
+		       (ENTITYID INTEGER NOT NULL,
 		       SENTENCE TEXT NOT NULL)''')
 		
 		c.execute('''CREATE TABLE LOCATIONS
-		       (ENTITYID TEXT  NOT NULL,
+		       (ENTITYID INTEGER  NOT NULL,
 		       LOCATION TEXT NOT NULL)''')
 
+		c.execute('''CREATE TABLE MENTIONEDWITH
+		       (ENTITYID1 INTEGER NOT NULL,
+		       ENTITYID2 INTEGER NOT NULL)''')
+
 	for entity_name in entity_dict.keys():
-		#0 index = name, 1st index = description, 2nd index = link
+		#0 index = summaries, 1st index = keys, 2nd index = links
 		sum_key_loc = entity_dict[entity_name]
 		name_no_apostrophes = entity_name.replace("'", "")
 		summary_no_apostrophes = [i.replace("'", "") for i in sum_key_loc[0]]
