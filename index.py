@@ -156,6 +156,7 @@ def thirdpage():
 			for info in filenames:
 				#create dictionary of named entities	
 				summarizer = FrequencySummarizer()
+				print info
 				text = extractText("test_files/" + info)
 				if info.split('.')[-1] == "pdf":
 					text = text.decode('utf8')
@@ -163,12 +164,10 @@ def thirdpage():
 				#newsummary = ""
 				#for i in summary:
 				#	newsummary += i
-				entities = nlp3.get_entity_names(text)
+				entities = nlp3.get_entity_names(text, "entity_stoplist.txt")
 				#location = info.replace("test_files/","")
 			 	keywordobj = rake.Rake("RAKE/SmartStoplist.txt")
 			 	keywords = keywordobj.run(text)
-
-			 	articles = "" #insert Austin's stuff the 
 				for entity in entities:
 					entsum = ""
 					entitysummary = nlp3.sentextract(text, entity)

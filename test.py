@@ -1,10 +1,10 @@
-from summarizer import FrequencySummarizer
-from extractText import extractText
-
-x = FrequencySummarizer()
-
-n = extractText("church.txt")
-
-n = n.decode('utf-8')
-
-print(x.summarize(n,1))
+x = open("test.txt", "r+")
+lines = x.read().lower()
+lines = lines.split()
+print lines
+y=""
+for i in lines:
+	if 'okay' == i:
+		print "Sucess"
+	else:
+		print "shit"
