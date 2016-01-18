@@ -40,8 +40,14 @@ def allowed_file(filename):
 	return '.' in filename and \
 		filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
+
 #render login
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET'])
+def home():
+	return render_template('home.html')
+
+#render login
+@app.route('/app', methods=['GET', 'POST'])
 def login():
 
 	if 'username' in session:
