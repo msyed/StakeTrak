@@ -12,7 +12,7 @@ from wikigrabber import gatherer as gr
 
 from articles import getArticles
 
-from dbfunc import dbinsert, mentionsinsert, dbquery
+from dbfunc import dbcustomdata, dbinsert, mentionsinsert, dbquery
 
 from summarizer import FrequencySummarizer
 
@@ -128,6 +128,13 @@ def uploader():
 	#prevent GET requests for second page
 	# if request.method == 'GET':
 	#   	return redirect(url_for('index'))
+
+@app.route('/customdata', methods=['POST', 'GET'])
+def customdata():
+	data = request.args.get('data', '')
+	## write data to db
+	dbcustomdata(1, data)
+	return redirect(url_for('index'))
 
 #render third page
 @app.route('/thirdpage', methods=['GET', 'POST'])

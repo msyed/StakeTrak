@@ -12,6 +12,16 @@ def cursorlen(cursor):
 		return 1
 	return 0
 
+def dbcustomdata(entity_id, custom_data):
+	print "CUSTOM_DATA:"
+	print custom_data
+	conn = sqlite3.connect("ASG.db")
+	c = conn.cursor()
+	c.execute("UPDATE ENTITIES SET CUSTOMDATA = (?) WHERE ENTITYID= (?)", (custom_data, entity_id))
+	conn.commit()
+	conn.close()
+	return 0
+
 def dbinsert(entity_dict):
 	# hpdict
 	# {'Name': [['summary'], [('key', 2.4), ('words', 1.3)], ['location'], [other1, other2]]}
