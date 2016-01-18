@@ -166,7 +166,6 @@ def thirdpage():
 			 	keywordobj = rake.Rake("RAKE/SmartStoplist.txt")
 			 	keywords = keywordobj.run(text)
 
-			 	articles = "" #insert Austin's stuff the 
 				for entity in entities:
 					entsum = ""
 					entitysummary = nlp3.sentextract(text, entity)
@@ -177,13 +176,6 @@ def thirdpage():
 						namedidentities[entity.lower()] = new_ent
 					else:
 						namedidentities[entity.lower()] = [entitysummary, keywords, [info]]
-
-				# NOTE: REIMPLEMENT WHEN API CALL LIMIT GETS FIXED instead of above for loop
-				# for entity in entities:
-				# 	# find articles based on each named entity
-				# 	articles = getArticles('%s' % entity)
-				# 	namedidentities[count] = [entity, newsummary, keywords, info, articles[0], articles[1], articles[2], articles[3], articles[4]]
-				# 	count += 1 
 
 			# pass named entities to template
 			# print namedidentities.values()
