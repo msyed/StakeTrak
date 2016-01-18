@@ -15,7 +15,7 @@ def getArticles(entity):
 	articleset = []
 
 	if 'result' not in myjson.keys():
-		print 'Error in API call'
+		print 'For DEBUGGING PURPOSES: Error in API call'
 		return 'Error in API call'
 
 	if 'docs' not in myjson['result'].keys():
