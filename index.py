@@ -142,7 +142,6 @@ def thirdpage():
 
 		#get file names from folder of files
 		else:
-			count = 0
 			namedidentities = {}
 			filenames = os.listdir('test_files/') 
 			
@@ -172,9 +171,12 @@ def thirdpage():
 					entsum = ""
 					entitysummary = nlp3.sentextract(text, entity)
 					# TODO could have more than one file with same name uploaded
-
-					namedidentities[entity.lower()] = [entitysummary, keywords, [info]]
-					count += 1 
+					if entity in namedidentities.keys():
+						old_ent = namedidentities[entity.lower()]
+						new_ent = [old_ent[0] + entitysummary, old_ent[1] + keywords, old_ent[2] + [info]]
+						namedidentities[entity.lower()] = new_ent
+					else:
+						namedidentities[entity.lower()] = [entitysummary, keywords, [info]]
 
 				# NOTE: REIMPLEMENT WHEN API CALL LIMIT GETS FIXED instead of above for loop
 				# for entity in entities:
