@@ -12,9 +12,9 @@ def cursorlen(cursor):
 		return 1
 	return 0
 
-def dbinsert(hpdict):
+def dbinsert(entity_dict):
 	# hpdict
-	# {0: ['Name', ['summary'], [('key', 2.4), ('words', 1.3)], ['location']]}
+	# {'Name': [['summary'], [('key', 2.4), ('words', 1.3)], ['location']]}
 
 	conn = sqlite3.connect("ASG.db")
 	c = conn.cursor()
@@ -41,19 +41,19 @@ def dbinsert(hpdict):
 		       (NAME TEXT  NOT NULL,
 		       LOCATION TEXT NOT NULL)''')
 
-	for entity in hpdict.values():
+	for entity_name in entity_dict.keys():
 		#0 index = name, 1st index = description, 2nd index = link
-		name_no_apostrophes = entity[0].replace("'", "")
-		summary_no_apostrophes = [i.replace("'", "") for i in entity[1]]
+		sum_key_loc = entity_dict[entity_name]
+		name_no_apostrophes = entity_name.replace("'", "")
+		summary_no_apostrophes = [i.replace("'", "") for i in sum_key_loc[0]]
 		c.execute("SELECT * FROM LOCATIONS WHERE NAME='" + name_no_apostrophes + "' ")
 		# Ensure that entry with that name doesn't already exist
 		if not c.fetchall():
-			for location in entity[3]:
+			for location in sum_key_loc[2]:
 				c.execute("INSERT INTO LOCATIONS(NAME, LOCATION) VALUES (?, ?)", (name_no_apostrophes, location))
-		for sentence in entity[1]:
+		for sentence in sum_ley_loc[0]:
 			c.execute("INSERT INTO SUMMARIES(NAME, SENTENCE) VALUES (?, ?)", (name_no_apostrophes, sentence))
-		print "ENTITY[0]:"
-		print entity[0]
+
 		# Now deal with tags.
 		c.execute("SELECT TAG, SCORE FROM TAGS WHERE NAME=? ", (name_no_apostrophes,))
 		current_keywords = c.fetchall()
@@ -70,7 +70,7 @@ def dbinsert(hpdict):
 		if current_keywords:
 			minimum_score = min([i[1] for i in current_keywords])
 		# now check if any values need to be updated
-		for (keyword, score) in entity[2]:
+		for (keyword, score) in sum_key_loc[1]:
 			# If the keyword is already in the database for that name,
 			# check if the score is bigger, in which case add it to 
 			# the dictionary that will eventually be input into the db.
@@ -144,10 +144,10 @@ def dbquery(query):
 			c.execute("SELECT LOCATION FROM LOCATIONS WHERE NAME=?", name)
 			location_list = [i[0] for i in c.fetchall()]
 
-			entity_result[counter] = [name[0], summary_list, tag_list, location_list]
+			entity_result[name[0]] = [summary_list, tag_list, location_list]
 			counter = counter + 1
 
 	#conn.commit()
 	conn.close()
-	# {0: ['Name', ['summary1', 'summary2'], [('key', 2.4), ('words', 1.3)], ['location', 'location2']]}
+	# {'Name': [['summary1', 'summary2'], [('key', 2.4), ('words', 1.3)], ['location', 'location2']]}
 	return entity_result

@@ -102,7 +102,6 @@ def secondpage():
 	return render_template('secondpage.html')
 
 @app.route('/dbsecondpage')
-
 def dbsecondpage():
 	if not 'username' in session:
 		return abort(404)
@@ -173,7 +172,8 @@ def thirdpage():
 					entsum = ""
 					entitysummary = nlp3.sentextract(text, entity)
 					# TODO could have more than one file with same name uploaded
-					namedidentities[count] = [entity.lower(), entitysummary, keywords, [info]]
+
+					namedidentities[entity.lower()] = [entitysummary, keywords, [info]]
 					count += 1 
 
 				# NOTE: REIMPLEMENT WHEN API CALL LIMIT GETS FIXED instead of above for loop
