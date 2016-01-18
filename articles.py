@@ -50,5 +50,5 @@ def getArticles(entity):
 	#return aritcleset
 
 
-if test:
-	getArticles('Patriots')
+# if test:
+# 	getArticles('Patriots')
