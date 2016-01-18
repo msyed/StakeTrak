@@ -12,7 +12,7 @@ from wikigrabber import gatherer as gr
 
 from articles import getArticles
 
-from dbfunc import dbinsert, dbquery
+from dbfunc import dbinsert, mentionsinsert, dbquery
 
 from summarizer import FrequencySummarizer
 
@@ -169,17 +169,19 @@ def thirdpage():
 				for entity in entities:
 					entsum = ""
 					entitysummary = nlp3.sentextract(text, entity)
-					# TODO could have more than one file with same name uploaded
+					entities.remove(entity)
 					if entity in namedidentities.keys():
 						old_ent = namedidentities[entity.lower()]
-						new_ent = [old_ent[0] + entitysummary, old_ent[1] + keywords, old_ent[2] + [info]]
+						new_ent = [old_ent[0] + entitysummary, list(set(old_ent[1] + keywords)), list(set(old_ent[2] + [info])), list(set(old_ent + entities))]
 						namedidentities[entity.lower()] = new_ent
 					else:
-						namedidentities[entity.lower()] = [entitysummary, keywords, [info]]
+						namedidentities[entity.lower()] = [entitysummary, keywords, [info], entities]
+					entities.append(entity)
 
 			# pass named entities to template
 			# print namedidentities.values()
 			dbinsert(namedidentities)
+			mentionsinsert(namedidentities)
 			return render_template('thirdpage.html', wiki=namedidentities, filenames1=filenames)
 		
 	#prevent GET requests for third page

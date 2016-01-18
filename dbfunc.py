@@ -48,7 +48,8 @@ def dbinsert(entity_dict):
 
 		c.execute('''CREATE TABLE MENTIONEDWITH
 		       (ENTITYID1 INTEGER NOT NULL,
-		       ENTITYID2 INTEGER NOT NULL)''')
+		       ENTITYID2 INTEGER NOT NULL,
+		       COUNT INTEGER NOT NULL)''')
 
 	for entity_name in entity_dict.keys():
 		#0 index = summaries, 1st index = keys, 2nd index = links
@@ -102,6 +103,23 @@ def dbinsert(entity_dict):
 
 	conn.commit()
 	conn.close()
+
+
+# Insert the mentions.
+def mentionsinsert(entity_dict):
+	entity_objects = []
+	for entity_name in entity_dict.keys():
+		c.execute("SELECT ENTITYID FROM ENTITIES WHERE NAME=?", (entity_name,))
+		result = c.fetchall()
+		assert(len(result) == 1)
+		entity_objects.append(result[0])
+	for mentioned in sum_key_loc[3]:
+		assert(not (mentioned == entity_name))
+		if mentioned < entity_name:
+			c.execute("SELECT * FROM MENTIONEDWITH WHERE ENTITYID1=?", (entity_id,))
+		else:
+			c.execute("SELECT * FROM MENTIONEDWITH WHERE ENTITYID2=?", (entity_id,))
+
 
 
 def dbquery(query):
@@ -170,3 +188,6 @@ def dbquery(query):
 	conn.close()
 	# {'Name': [['summary1', 'summary2'], [('key', 2.4), ('words', 1.3)], ['location', 'location2']]}
 	return entity_result
+
+
+
