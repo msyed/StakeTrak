@@ -12,9 +12,9 @@ def cursorlen(cursor):
 		return 1
 	return 0
 
-def dbinsert(hpdict):
+def dbinsert(entity_dict):
 	# hpdict
-	# {0: ['Name', ['summary'], [('key', 2.4), ('words', 1.3)], ['location']]}
+	# {'Name': [['summary'], [('key', 2.4), ('words', 1.3)], ['location']]}
 
 	conn = sqlite3.connect("ASG.db")
 	c = conn.cursor()
@@ -23,41 +23,51 @@ def dbinsert(hpdict):
 	l = cursorlen(val.fetchall())
 	if l == 0:
 		print "ABOUT TO CREATE A TABLE!"
-		# This table stores the tags. Each name may appear more than once,
+
+		# create table entries (id integer primary key autoincrement, data)
+		c.execute('''CREATE TABLE ENTITIES
+		       (ENTITYID INTEGER  PRIMARY KEY autoincrement,
+		       NAME TEXT NOT NULL,
+		       CUSTOMDATA TEXT )''')
+
+		# This table stores the tags. Each entityid may appear more than once,
 		# and each tag may appear more than once, but no pair may appear
 		# more than once!
 		c.execute('''CREATE TABLE TAGS
-		       (NAME TEXT  NOT NULL,
+		       (ENTITYID TEXT  NOT NULL,
 		       TAG TEXT NOT NULL,
 		       SCORE REAL)''')
 
-
 		c.execute('''CREATE TABLE SUMMARIES
-		       (NAME TEXT  NOT NULL,
+		       (ENTITYID TEXT  NOT NULL,
 		       SENTENCE TEXT NOT NULL)''')
 		
-
 		c.execute('''CREATE TABLE LOCATIONS
-		       (NAME TEXT  NOT NULL,
+		       (ENTITYID TEXT  NOT NULL,
 		       LOCATION TEXT NOT NULL)''')
 
-	for entity in hpdict.values():
+	for entity_name in entity_dict.keys():
 		#0 index = name, 1st index = description, 2nd index = link
-		name_no_apostrophes = entity[0].replace("'", "")
-		summary_no_apostrophes = [i.replace("'", "") for i in entity[1]]
-		c.execute("SELECT * FROM LOCATIONS WHERE NAME='" + name_no_apostrophes + "' ")
+		sum_key_loc = entity_dict[entity_name]
+		name_no_apostrophes = entity_name.replace("'", "")
+		summary_no_apostrophes = [i.replace("'", "") for i in sum_key_loc[0]]
+		c.execute("SELECT * FROM ENTITIES WHERE NAME='" + name_no_apostrophes + "' ")
 		# Ensure that entry with that name doesn't already exist
 		if not c.fetchall():
-			for location in entity[3]:
-				c.execute("INSERT INTO LOCATIONS(NAME, LOCATION) VALUES (?, ?)", (name_no_apostrophes, location))
-		for sentence in entity[1]:
-			c.execute("INSERT INTO SUMMARIES(NAME, SENTENCE) VALUES (?, ?)", (name_no_apostrophes, sentence))
-		print "ENTITY[0]:"
-		print entity[0]
+			c.execute("INSERT INTO ENTITIES(NAME) VALUES (?)", (name_no_apostrophes,))
+
+		c.execute("SELECT ENTITYID FROM ENTITIES WHERE NAME=?", (name_no_apostrophes,))
+		# check if more than one element, which would be a problem.
+		entity_id = c.fetchall()[0][0]
+		for location in sum_key_loc[2]:
+			c.execute("INSERT INTO LOCATIONS(ENTITYID, LOCATION) VALUES (?, ?)", (entity_id, location))
+		for sentence in sum_key_loc[0]:
+			c.execute("INSERT INTO SUMMARIES(ENTITYID, SENTENCE) VALUES (?, ?)", (entity_id, sentence))
+
 		# Now deal with tags.
-		c.execute("SELECT TAG, SCORE FROM TAGS WHERE NAME=? ", (name_no_apostrophes,))
+		c.execute("SELECT TAG, SCORE FROM TAGS WHERE ENTITYID=? ", (entity_id,))
 		current_keywords = c.fetchall()
-		c.execute("DELETE FROM TAGS WHERE NAME=? ", (name_no_apostrophes,))
+		c.execute("DELETE FROM TAGS WHERE ENTITYID=? ", (entity_id,))
 		current_keywords_dict = {}
 		# initialize dict to what is in db
 		print "current_keywords:"
@@ -70,7 +80,7 @@ def dbinsert(hpdict):
 		if current_keywords:
 			minimum_score = min([i[1] for i in current_keywords])
 		# now check if any values need to be updated
-		for (keyword, score) in entity[2]:
+		for (keyword, score) in sum_key_loc[1]:
 			# If the keyword is already in the database for that name,
 			# check if the score is bigger, in which case add it to 
 			# the dictionary that will eventually be input into the db.
@@ -84,7 +94,7 @@ def dbinsert(hpdict):
 				current_keywords_dict[keyword] = score
 		k_keys_sorted_by_scores = nlargest(MAX_KEYS_PER_ENTITY, current_keywords_dict, key=current_keywords_dict.get)
 		for key in k_keys_sorted_by_scores:
-			c.execute("INSERT INTO TAGS(NAME, TAG, SCORE) VALUES (?, ?, ?)", (name_no_apostrophes, key, current_keywords_dict[key]))
+			c.execute("INSERT INTO TAGS(ENTITYID, TAG, SCORE) VALUES (?, ?, ?)", (entity_id, key, current_keywords_dict[key]))
 
 	conn.commit()
 	conn.close()
@@ -104,34 +114,39 @@ def dbquery(query):
 		
 		#c.execute(''' SELECT a.* from (SELECT *, 1 as rank FROM ENTITIES WHERE NAME LIKE '%:q%' UNION SELECT *, 2 as rank FROM ENTITIES WHERE TAGS LIKE '%:q%') a order by a.rank asc;''', {"q": query})
 		try:
-			c.execute("SELECT NAME FROM TAGS WHERE TAG LIKE '%" + q + "%' LIMIT 100")
+			c.execute("SELECT ENTITYID FROM TAGS WHERE TAG LIKE '%" + q + "%' LIMIT 100")
 		except sqlite3.OperationalError:
+			# there's no tables made yet.
 			return 0
 		tag_result = c.fetchall()
 		tag_entities = []
-		for name in tag_result:
-			c.execute("SELECT * FROM LOCATIONS WHERE NAME=?", name)
+		for tag_id in tag_result:
+			c.execute("SELECT * FROM LOCATIONS WHERE ENTITYID=?", tag_id)
 			tag_entities.append(c.fetchall())
+
 		# Return search results by order: NAME, SUMMARY, TAG
-		c.execute("SELECT NAME FROM LOCATIONS WHERE NAME LIKE '%" + q + "%' LIMIT 5")
+		c.execute("SELECT ENTITYID FROM ENTITIES WHERE NAME LIKE '%" + q + "%' LIMIT 5")
 		name_result = c.fetchall()
-		c.execute("SELECT NAME FROM TAGS WHERE TAG LIKE '%" + q + "%' LIMIT 5")
+		c.execute("SELECT ENTITYID FROM TAGS WHERE TAG LIKE '%" + q + "%' LIMIT 5")
 		tag_result = c.fetchall()
-		c.execute("SELECT NAME FROM SUMMARIES WHERE SENTENCE LIKE '%" + q + "%' LIMIT 5")
+		c.execute("SELECT ENTITYID FROM SUMMARIES WHERE SENTENCE LIKE '%" + q + "%' LIMIT 5")
 		summary_result = c.fetchall()
-		c.execute("SELECT NAME FROM LOCATIONS WHERE LOCATION LIKE '%" + q + "%' LIMIT 5")
+		c.execute("SELECT ENTITYID FROM LOCATIONS WHERE LOCATION LIKE '%" + q + "%' LIMIT 5")
 		filename_result = c.fetchall()
 
 		entity_result = {}
 		counter = 0
-		unique_output_names = []
+		unique_output_ids = []
 		for item in name_result + tag_result + summary_result + filename_result:
-			if item not in unique_output_names:
-				unique_output_names.append(item)
-		for name in unique_output_names:
-			print "NAME"
-			print name
-			c.execute("SELECT SENTENCE FROM SUMMARIES WHERE NAME=?", name)
+			if item not in unique_output_ids:
+				unique_output_ids.append(item)
+		for final_id in unique_output_ids:
+			# Get name:
+			c.execute("SELECT NAME FROM ENTITIES WHERE ENTITYID=?", final_id)
+			name = c.fetchall()[0][0]
+			print "ID"
+			print final_id
+			c.execute("SELECT SENTENCE FROM SUMMARIES WHERE ENTITYID=?", final_id)
 
 			summary_chars = [i[0] for i in c.fetchall()]
 			# for some reason this is a list of every character in a string....
@@ -139,15 +154,15 @@ def dbquery(query):
 			for char in summary_chars:
 				total = total + char
 			summary_list = [total]
-			c.execute("SELECT TAG, SCORE FROM TAGS WHERE NAME=?", name)
+			c.execute("SELECT TAG, SCORE FROM TAGS WHERE ENTITYID=?", final_id)
 			tag_list = c.fetchall()
-			c.execute("SELECT LOCATION FROM LOCATIONS WHERE NAME=?", name)
+			c.execute("SELECT LOCATION FROM LOCATIONS WHERE ENTITYID=?", final_id)
 			location_list = [i[0] for i in c.fetchall()]
 
-			entity_result[counter] = [name[0], summary_list, tag_list, location_list]
+			entity_result[name] = [summary_list, tag_list, location_list]
 			counter = counter + 1
 
 	#conn.commit()
 	conn.close()
-	# {0: ['Name', ['summary1', 'summary2'], [('key', 2.4), ('words', 1.3)], ['location', 'location2']]}
+	# {'Name': [['summary1', 'summary2'], [('key', 2.4), ('words', 1.3)], ['location', 'location2']]}
 	return entity_result
