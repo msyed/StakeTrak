@@ -38,11 +38,13 @@ def get_entity_names(text):
 def sentextract(text, entity):
     entity = entity.lower()
     sentences = nltk.sent_tokenize(text)
-    tensent = [None] * 10
+    tensent = []
     count = 0
     for sent in sentences:
-        if entity in sent.lower() and count < 10:
-            tensent[count] = sent
+        if count > 9:
+            break
+        if entity in sent.lower():
+            tensent.append(sent)
             count += 1
     return tensent
 

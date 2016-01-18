@@ -151,6 +151,8 @@ def thirdpage():
 				#create dictionary of named entities	
 				summarizer = FrequencySummarizer()
 				text = extractText("test_files/" + info)
+				if info.split('.')[-1] == "pdf":
+					text = text.decode('utf8')
 				summary = summarizer.summarize(text, 3)
 				#newsummary = ""
 				#for i in summary:
@@ -164,11 +166,8 @@ def thirdpage():
 				for entity in entities:
 					entsum = ""
 					entitysummary = nlp3.sentextract(text, entity)
-					for i in entitysummary:
-						if i:
-							entsum += i + "... "
 					# TODO could have more than one file with same name uploaded
-					namedidentities[count] = [entity.lower(), entsum, keywords, [info]]
+					namedidentities[count] = [entity.lower(), entitysummary, keywords, [info]]
 					count += 1 
 
 				# NOTE: REIMPLEMENT WHEN API CALL LIMIT GETS FIXED instead of above for loop

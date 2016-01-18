@@ -14,7 +14,7 @@ def cursorlen(cursor):
 
 def dbinsert(hpdict):
 	# hpdict
-	# {0: ['Name', 'summary', [('key', 2.4), ('words', 1.3)], ['location']]}
+	# {0: ['Name', ['summary'], [('key', 2.4), ('words', 1.3)], ['location']]}
 
 	conn = sqlite3.connect("ASG.db")
 	c = conn.cursor()
@@ -44,7 +44,7 @@ def dbinsert(hpdict):
 	for entity in hpdict.values():
 		#0 index = name, 1st index = description, 2nd index = link
 		name_no_apostrophes = entity[0].replace("'", "")
-		summary_no_apostrophes = entity[1].replace("'", "")
+		summary_no_apostrophes = [i.replace("'", "") for i in entity[1]]
 		c.execute("SELECT * FROM LOCATIONS WHERE NAME='" + name_no_apostrophes + "' ")
 		# Ensure that entry with that name doesn't already exist
 		if not c.fetchall():
@@ -124,7 +124,11 @@ def dbquery(query):
 
 		entity_result = {}
 		counter = 0
-		for name in name_result + tag_result + summary_result + filename_result:
+		unique_output_names = []
+		for item in name_result + tag_result + summary_result + filename_result:
+			if item not in unique_output_names:
+				unique_output_names.append(item)
+		for name in unique_output_names:
 			print "NAME"
 			print name
 			c.execute("SELECT SENTENCE FROM SUMMARIES WHERE NAME=?", name)
