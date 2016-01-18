@@ -40,8 +40,14 @@ def allowed_file(filename):
 	return '.' in filename and \
 		filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
+
 #render login
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET'])
+def home():
+	return render_template('home.html')
+
+#render login
+@app.route('/app', methods=['GET', 'POST'])
 def login():
 
 	if 'username' in session:
@@ -150,13 +156,13 @@ def thirdpage():
 			for info in filenames:
 				#create dictionary of named entities	
 				summarizer = FrequencySummarizer()
-				print "FILEPATH"
-				print info
 				text = extractText("test_files/" + info)
+				if info.split('.')[-1] == "pdf":
+					text = text.decode('utf8')
 				summary = summarizer.summarize(text, 3)
-				newsummary = ""
-				for i in summary:
-					newsummary += i
+				#newsummary = ""
+				#for i in summary:
+				#	newsummary += i
 				entities = nlp3.get_entity_names(text)
 				#location = info.replace("test_files/","")
 			 	keywordobj = rake.Rake("RAKE/SmartStoplist.txt")
@@ -164,7 +170,10 @@ def thirdpage():
 
 			 	articles = "" #insert Austin's stuff the 
 				for entity in entities:
-					namedidentities[count] = [entity.lower(), newsummary, keywords, info]
+					entsum = ""
+					entitysummary = nlp3.sentextract(text, entity)
+					# TODO could have more than one file with same name uploaded
+					namedidentities[count] = [entity.lower(), entitysummary, keywords, [info]]
 					count += 1 
 
 				# NOTE: REIMPLEMENT WHEN API CALL LIMIT GETS FIXED instead of above for loop

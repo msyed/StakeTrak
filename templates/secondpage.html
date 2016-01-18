@@ -22,6 +22,7 @@
     <link href="{{ url_for('static', filename='') }}css/basic.css" rel="stylesheet">
 
     <script src="{{ url_for('static', filename='') }}js/jquery.js"></script>
+    <script src="{{ url_for('static', filename='') }}js/progressbar.js"></script>
     <script>
       $(document).ready(function() {
         $('#submit-upload').on('click', function() {
@@ -34,7 +35,63 @@
           })
           $('#loading-icon').toggle();
           $('#file-dropzone').toggle();
+
+          var total = 0
+          var sizeList = $('.dz-size');
+          for (var i = 0; i < sizeList.length; i++) {
+            sl = sizeList[i].innerHTML.split("</strong> ");
+            var sizeValue = $('.dz-size strong')[i].innerHTML;
+            var unit = sl[sl.length - 1].substring(0, 2);
+            var typeStr = $('.dz-filename span')[i].innerHTML;
+            var type = typeStr.split('.');
+            var t = type[type.length - 1];
+
+            var multiplier = 1
+            console.log(t.toLowerCase());
+            if (t.toLowerCase() == "pdf") {
+              multiplier = 0.192;
+            }
+            if (t.toLowerCase() == "docx" || t.toLowerCase() == "doc") {
+              multiplier = 0.394;
+            }
+            console.log(unit.toLowerCase());
+            if (unit.toLowerCase() == "m") {
+              multiplier = multiplier * 1024;
+              console.log("megabytes!");
+            }
+            if (unit.toLowerCase() == "gb") {
+              multiplier = multiplier * 1024 * 1024;
+            }
+            // 30 seconds per kilobyte
+            var rate = 30;
+            var seconds = parseFloat(sizeValue) * multiplier * rate;
+            total = total + seconds
+          }
+
+          total = Math.floor(total)
+          console.log("processing will take approximately " + total + " seconds.");
+
+          var element = document.getElementById('example-clock-container');
+          var seconds = new ProgressBar.Circle(element, {
+              duration: 800,
+              color: "#FCB03C",
+              trailColor: "#ddd"
+          });
+
+          seconds.animate(0, function() {
+              seconds.setText(0);
+          });
+          var lastSecond = 0;
+          setInterval(function() {
+            seconds.animate(lastSecond / total, function() {
+                seconds.setText(Math.floor(lastSecond*100/total));
+                lastSecond = lastSecond + 1;
+            });
+          }, total*10);
+
+
         });
+
       });
     </script>
 
@@ -44,7 +101,8 @@
   <body>
     
     <section id="about" class="container content-section text-center"> 
-      <img id="loading-icon" style="display: none;" src="{{ url_for('static', filename='') }}img/cube.gif" alt="loading-icon" width="80" height="80">
+      <div style="width: 200px" id="example-clock-container"></div>
+      <img id="loading-icon" style="display: none;" src="{{ url_for('static', filename='') }}img/cube.gif" alt="loading-icon" width="120" height="120">
       <!-- file drop zone -->
       <div id="file-dropzone" class="col-md-8 col-md-offset-2">
         <h1>Drag and Drop Files</h1>

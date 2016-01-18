@@ -59,26 +59,43 @@
               <hr class="star-light">
               <div class="row">
 
-                <!-- provide wikipedia summary-->                           
-                <p> {% print "Article Summary: " + info[1] %} <p>
+                <!-- provide summary--> 
+                {% print "Sentences in which Entity Appears: " %}
+                <p> 
+                  {% for sentence in info[1]: %}
+                    <p>{% print sentence %} </p>
+                  {% endfor %}
+                </p>
 
                 <br>
-                <p>{% print ( "Keywords: " + info[2][0][0] + ", " + info[2][1][0] + ", " + info[2][2][0] + ", " + info[2][3][0] + ", " + info[2][4][0]) %}</p>
-                <a href="{{ url_for('thirdpage') + '?q=' }}{% print info[2] %}" style="color: #CC0000">{% print info[2] %}</a>
 
-                <p> Found in {% print info[3] %} <p>
+                <p>
+                  Keywords: 
+                  {% for keyword in info[2] %}
+                    <a href="{{ url_for('thirdpage') }}?q={{ keyword[0] }}" style="color: #CC0000">{% print keyword[0] %}</a>
+                  {% endfor %}
+                </p>
+
+                <p> 
+                {% for location in info[3] %}
+                  <p>Found in <a href="{{ url_for('thirdpage') }}?q={{ location }}" style="color: #CC0000">{% print location %}</a></p>
+                {% endfor %}
+                </p>
                 
-                <p> Recent News Articles <p>
-                  
-                <a href="{% print info[4] %}" style="color: #CC0000">{% print info[4] %}</a>
+                <p> Recent News Articles 
+                  <ul>
+                    <li><a href="{% print info[4] %}" style="color: #CC0000">{% print info[4] %}</a></li>
 
-                <a href="{% print info[5] %}" style="color: #CC0000">{% print info[5] %}</a>
+                    <li><a href="{% print info[5] %}" style="color: #CC0000">{% print info[5] %}</a></li>
 
-                <a href="{% print info[6] %}" style="color: #CC0000">{% print info[6] %}</a>
+                    <li><a href="{% print info[6] %}" style="color: #CC0000">{% print info[6] %}</a></li>
 
-                <a href="{% print info[7] %}" style="color: #CC0000">{% print info[7] %}</a>
-                
-                <a href="{% print info[8] %}" style="color: #CC0000">{% print info[8] %}</a>
+                    <li><a href="{% print info[7] %}" style="color: #CC0000">{% print info[7] %}</a></li>
+                    
+                    <li><a href="{% print info[8] %}" style="color: #CC0000">{% print info[8] %}</a></li>
+                  </ul>
+                </p>
+
                 <!-- line breaks following each entry -->
                 <br> 
                 <br>  
