@@ -1,6 +1,7 @@
 
 body {
-    background-image: url(../img/firstbackground.gif);
+    background-image: url(../img/bg.jpg);
+    background-size: 100% auto;
     
 }
 
