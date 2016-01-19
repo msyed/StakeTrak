@@ -56,7 +56,7 @@ def dbinsert(entity_dict):
 	val = c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='ENTITIES'")
 	l = cursorlen(val.fetchall())
 	if l == 0:
-		print "ABOUT TO CREATE A TABLE!"
+		#print "ABOUT TO CREATE A TABLE!"
 
 		# create table entries (id integer primary key autoincrement, data)
 		c.execute('''CREATE TABLE ENTITIES
@@ -85,13 +85,14 @@ def dbinsert(entity_dict):
 		       ENTITYID2 INTEGER NOT NULL,
 		       COUNT INTEGER NOT NULL)''')
 
-	print entity_dict
+
+
 	ids = []
 	for entity_name in entity_dict.keys():
 		#0 index = summaries, 1st index = keys, 2nd index = links
 		sum_key_loc = entity_dict[entity_name]
-		print "ENTITY NAME"
-		print entity_name
+		#print "ENTITY NAME"
+		#print entity_name
 		name_no_apostrophes = entity_name.replace("'", "")
 		summary_no_apostrophes = [i.replace("'", "") for i in sum_key_loc[0]]
 		c.execute("SELECT * FROM ENTITIES WHERE NAME='" + name_no_apostrophes + "' ")
@@ -115,8 +116,8 @@ def dbinsert(entity_dict):
 		c.execute("DELETE FROM TAGS WHERE ENTITYID=? ", (entity_id,))
 		current_keywords_dict = {}
 		# initialize dict to what is in db
-		print "current_keywords:"
-		print current_keywords
+		#print "current_keywords:"
+		#print current_keywords
 		for (keyword, score) in current_keywords:
 			# convert from unicode.
 			current_keywords_dict[keyword] = score
@@ -162,9 +163,9 @@ def dbinsert(entity_dict):
 
 def dbquery(query):
 	q = urllib.unquote(query).decode('utf8') 
-	print "QUERY:"
-	print query
-	print type(query)
+	#print "QUERY:"
+	#print query
+	#print type(query)
 	conn = sqlite3.connect("ASG.db")
 	wordlist = set(q.split(" "))
 	entity_result = []
@@ -208,8 +209,8 @@ def dbquery(query):
 			# Get name:
 			c.execute("SELECT NAME FROM ENTITIES WHERE ENTITYID=?", final_id)
 			name = c.fetchall()[0][0]
-			print "ID"
-			print final_id
+			#print "ID"
+			#print final_id
 			c.execute("SELECT SENTENCE FROM SUMMARIES WHERE ENTITYID=?", final_id)
 
 			summary_chars = [i[0] for i in c.fetchall()]

@@ -1,6 +1,8 @@
 #to delete files
 import os, shutil
 
+from copy import copy
+
 #web application framework written in python
 from flask import Flask, abort, session, request, url_for, make_response, redirect, render_template
 
@@ -79,10 +81,10 @@ def login():
 def index():
 	if 'username' in session:
 		# logged in!
-		print "RENDER_TEMPLATE:"
+		#print "RENDER_TEMPLATE:"
 		#print render_template('index.html', username=session['username'])
-		print "USERNAME:"
-		print session['username']
+		#print "USERNAME:"
+		#print session['username']
 		return render_template('index.html', username=session['username'])
 	else:
 		return abort(404)
@@ -157,7 +159,7 @@ def thirdpage():
 
 		#get file names from folder of files
 		else:
-			print "GETTING FILENAMES"
+			#print "GETTING FILENAMES"
 			namedidentities = {}
 			filenames = os.listdir('test_files/') 
 			
@@ -165,8 +167,6 @@ def thirdpage():
 			for i in filenames:
 				if i[0] == '.':
 					filenames.remove(i)
-			print "ITERATING THROUGH FILENAMES"
-			print filenames
 			#iterate through each file and run wikigrabber function	
 			for info in filenames:
 				#create dictionary of named entities	
@@ -179,22 +179,35 @@ def thirdpage():
 				#for i in summary:
 				#	newsummary += i
 				entities = nlp3.get_entity_names(text, "entity_stoplist.txt")
+				print entities
+				entitiescopy = copy(entities)
 				#location = info.replace("test_files/","")
 			 	keywordobj = rake.Rake("RAKE/SmartStoplist.txt")
 			 	keywords = keywordobj.run(text)
-			 	print "ENTITIES:"
-			 	print entities
+			 	#print "ENTITIES:"
+			 	#print entities
 				for entity in entities:
-					entsum = ""
+					#temp = deepcopy(entity)
+					#print temp
+					# TODO could have more than one file with same name uploaded
+				# NOTE: REIMPLEMENT WHEN API CALL LIMIT GETS FIXED instead of aove for loop
+				# for entity in entities:
+				# 	# find articles based on each named entity
+				# 	articles = getArticles('%s' % entity)
+				# 	namedidentities[count] = [entity, newsummary, keywords, info, articles[0], articles[1], articles[2], articles[3], articles[4]]
+				# 	count += 1 
+					#print entities
 					entitysummaries = nlp3.sentextract(text, entity)
-					entities.remove(entity)
+					entitiescopy.remove(entity)
 					if entity.lower() in namedidentities.keys():
 						old_ent = namedidentities[entity.lower()]
-						new_ent = [old_ent[0] + entitysummaries, list(set(old_ent[1] + keywords)), list(set(old_ent[2] + [info])), list(set(old_ent[3] + entities))]
+						new_ent = [old_ent[0] + entitysummaries, list(set(old_ent[1] + keywords)), list(set(old_ent[2] + [info])), list(set(old_ent[3] + entitiescopy))]
 						namedidentities[entity.lower()] = new_ent
 					else:
-						namedidentities[entity.lower()] = [entitysummaries, keywords, [info], entities]
-					entities.append(entity)
+						namedidentities[entity.lower()] = [entitysummaries, keywords, [info], entitiescopy]
+					#print "PLease let Barack be here"
+					entitiescopy.append(entity)
+					#print entities
 
 			# pass named entities to template
 			# print namedidentities.values()
