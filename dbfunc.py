@@ -22,14 +22,26 @@ def dbcustomdata(entity_id, custom_data):
 	conn.close()
 	return 0
 
+def trymakeusertable():
+	conn = sqlite3.connect("ASG.db")
+	c = conn.cursor()
+	val = c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='USERS'")
+	if cursolen(val.fetchall()):
+		return
+	c.execute('''CREATE TABLE USERS
+       (USERID INTEGER PRIMARY KEY autoincrement,
+       USERNAME TEXT NOT NULL,
+       HASHEDPASSWORD TEXT NOT NULL)''')
+	return
+
 def dbinsert(entity_dict):
 	# hpdict
-	# {'Name': [['summary'], [('key', 2.4), ('words', 1.3)], ['location']]}
+	# {'Name': [['summary'], [('key', 2.4), ('words', 1.3)], ['location'], [other1, other2]]}
 
 	conn = sqlite3.connect("ASG.db")
 	c = conn.cursor()
 
-	val = c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='LOCATIONS'")
+	val = c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='ENTITIES'")
 	l = cursorlen(val.fetchall())
 	if l == 0:
 		print "ABOUT TO CREATE A TABLE!"
@@ -44,21 +56,29 @@ def dbinsert(entity_dict):
 		# and each tag may appear more than once, but no pair may appear
 		# more than once!
 		c.execute('''CREATE TABLE TAGS
-		       (ENTITYID TEXT  NOT NULL,
+		       (ENTITYID INTEGER  NOT NULL,
 		       TAG TEXT NOT NULL,
 		       SCORE REAL)''')
 
 		c.execute('''CREATE TABLE SUMMARIES
-		       (ENTITYID TEXT  NOT NULL,
+		       (ENTITYID INTEGER NOT NULL,
 		       SENTENCE TEXT NOT NULL)''')
 		
 		c.execute('''CREATE TABLE LOCATIONS
-		       (ENTITYID TEXT  NOT NULL,
+		       (ENTITYID INTEGER  NOT NULL,
 		       LOCATION TEXT NOT NULL)''')
 
+		c.execute('''CREATE TABLE MENTIONEDWITH
+		       (ENTITYID1 INTEGER NOT NULL,
+		       ENTITYID2 INTEGER NOT NULL,
+		       COUNT INTEGER NOT NULL)''')
+
+	print entity_dict
 	for entity_name in entity_dict.keys():
-		#0 index = name, 1st index = description, 2nd index = link
+		#0 index = summaries, 1st index = keys, 2nd index = links
 		sum_key_loc = entity_dict[entity_name]
+		print "ENTITY NAME"
+		print entity_name
 		name_no_apostrophes = entity_name.replace("'", "")
 		summary_no_apostrophes = [i.replace("'", "") for i in sum_key_loc[0]]
 		c.execute("SELECT * FROM ENTITIES WHERE NAME='" + name_no_apostrophes + "' ")
@@ -105,6 +125,20 @@ def dbinsert(entity_dict):
 		k_keys_sorted_by_scores = nlargest(MAX_KEYS_PER_ENTITY, current_keywords_dict, key=current_keywords_dict.get)
 		for key in k_keys_sorted_by_scores:
 			c.execute("INSERT INTO TAGS(ENTITYID, TAG, SCORE) VALUES (?, ?, ?)", (entity_id, key, current_keywords_dict[key]))
+
+
+	entity_objects = []
+	for entity_name in entity_dict.keys():
+		c.execute("SELECT ENTITYID FROM ENTITIES WHERE NAME=?", (entity_name,))
+		result = c.fetchall()
+		assert(len(result) == 1)
+		entity_objects.append(result[0])
+	for mentioned in sum_key_loc[3]:
+		assert(not (mentioned == entity_name))
+		if mentioned < entity_name:
+			c.execute("SELECT * FROM MENTIONEDWITH WHERE ENTITYID1=?", (entity_id,))
+		else:
+			c.execute("SELECT * FROM MENTIONEDWITH WHERE ENTITYID2=?", (entity_id,))
 
 	conn.commit()
 	conn.close()
@@ -176,3 +210,6 @@ def dbquery(query):
 	conn.close()
 	# {'Name': [['summary1', 'summary2'], [('key', 2.4), ('words', 1.3)], ['location', 'location2']]}
 	return entity_result
+
+
+

@@ -12,7 +12,7 @@ from wikigrabber import gatherer as gr
 
 from articles import getArticles
 
-from dbfunc import dbinsert, dbquery
+from dbfunc import dbcustomdata, dbinsert, dbquery
 
 from summarizer import FrequencySummarizer
 
@@ -49,6 +49,8 @@ def home():
 #render login
 @app.route('/app', methods=['GET', 'POST'])
 def login():
+
+	trymakeusertable()
 
 	if 'username' in session:
 		return redirect(url_for('index'))
@@ -102,7 +104,6 @@ def secondpage():
 	return render_template('secondpage.html')
 
 @app.route('/dbsecondpage')
-
 def dbsecondpage():
 	if not 'username' in session:
 		return abort(404)
@@ -130,6 +131,13 @@ def uploader():
 	# if request.method == 'GET':
 	#   	return redirect(url_for('index'))
 
+@app.route('/customdata', methods=['POST', 'GET'])
+def customdata():
+	data = request.args.get('data', '')
+	## write data to db
+	dbcustomdata(1, data)
+	return redirect(url_for('index'))
+
 #render third page
 @app.route('/thirdpage', methods=['GET', 'POST'])
 def thirdpage():
@@ -143,7 +151,7 @@ def thirdpage():
 
 		#get file names from folder of files
 		else:
-			count = 0
+			print "GETTING FILENAMES"
 			namedidentities = {}
 			filenames = os.listdir('test_files/') 
 			
@@ -151,7 +159,8 @@ def thirdpage():
 			for i in filenames:
 				if i[0] == '.':
 					filenames.remove(i)
-
+			print "ITERATING THROUGH FILENAMES"
+			print filenames
 			#iterate through each file and run wikigrabber function	
 			for info in filenames:
 				#create dictionary of named entities	
@@ -167,20 +176,26 @@ def thirdpage():
 				#location = info.replace("test_files/","")
 			 	keywordobj = rake.Rake("RAKE/SmartStoplist.txt")
 			 	keywords = keywordobj.run(text)
-
-			 	articles = "" #insert Austin's stuff the 
+			 	print "ENTITIES:"
+			 	print entities
 				for entity in entities:
-					entsum = ""
-					entitysummary = nlp3.sentextract(text, entity)
 					# TODO could have more than one file with same name uploaded
-					namedidentities[entity.lower()] = [entitysummary, keywords, [info]]
-
-				# NOTE: REIMPLEMENT WHEN API CALL LIMIT GETS FIXED instead of above for loop
+				# NOTE: REIMPLEMENT WHEN API CALL LIMIT GETS FIXED instead of aove for loop
 				# for entity in entities:
 				# 	# find articles based on each named entity
 				# 	articles = getArticles('%s' % entity)
 				# 	namedidentities[count] = [entity, newsummary, keywords, info, articles[0], articles[1], articles[2], articles[3], articles[4]]
 				# 	count += 1 
+
+					entitysummaries = nlp3.sentextract(text, entity)
+					entities.remove(entity)
+					if entity.lower() in namedidentities.keys():
+						old_ent = namedidentities[entity.lower()]
+						new_ent = [old_ent[0] + entitysummaries, list(set(old_ent[1] + keywords)), list(set(old_ent[2] + [info])), list(set(old_ent[3] + entities))]
+						namedidentities[entity.lower()] = new_ent
+					else:
+						namedidentities[entity.lower()] = [entitysummaries, keywords, [info], entities]
+					entities.append(entity)
 
 			# pass named entities to template
 			# print namedidentities.values()
