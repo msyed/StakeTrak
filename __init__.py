@@ -94,7 +94,13 @@ def secondpage():
 		return abort(404)
 	#adapted from http://stackoverflow.com/questions/185936/delete-folder-contents-in-python
 	#delete all old files when renderding second page to ensure new upload screen for user
-	for the_file in os.listdir(UPLOAD_FOLDER):
+	files = []
+	try:
+		files = os.listdir(UPLOAD_FOLDER)
+	except OSError:
+		os.mkdir(UPLOAD_FOLDER)
+		files = os.listdir(UPLOAD_FOLDER)
+	for the_file in files:
 		file_path = os.path.join(UPLOAD_FOLDER, the_file)
 		try:
 			if os.path.isfile(file_path):
