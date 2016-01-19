@@ -163,7 +163,7 @@ def thirdpage():
 				#newsummary = ""
 				#for i in summary:
 				#	newsummary += i
-				entities = nlp3.get_entity_names(text)
+				entities = nlp3.get_entity_names(text, "entity_stoplist.txt")
 				#location = info.replace("test_files/","")
 			 	keywordobj = rake.Rake("RAKE/SmartStoplist.txt")
 			 	keywords = keywordobj.run(text)
@@ -173,8 +173,7 @@ def thirdpage():
 					entsum = ""
 					entitysummary = nlp3.sentextract(text, entity)
 					# TODO could have more than one file with same name uploaded
-					namedidentities[count] = [entity.lower(), entitysummary, keywords, [info]]
-					count += 1 
+					namedidentities[entity.lower()] = [entitysummary, keywords, [info]]
 
 				# NOTE: REIMPLEMENT WHEN API CALL LIMIT GETS FIXED instead of above for loop
 				# for entity in entities:

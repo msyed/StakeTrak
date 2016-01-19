@@ -175,12 +175,12 @@ def thirdpage():
 					entsum = ""
 					entitysummary = nlp3.sentextract(text, entity)
 					# TODO could have more than one file with same name uploaded
-					if entity in namedidentities.keys():
-						old_ent = namedidentities[entity.lower()]
-						new_ent = [old_ent[0] + entitysummary, old_ent[1] + keywords, old_ent[2] + [info]]
-						namedidentities[entity.lower()] = new_ent
-					else:
-						namedidentities[entity.lower()] = [entitysummary, keywords, [info]]
+					# if entity in namedidentities.keys():
+					# 	old_ent = namedidentities[entity.lower()]
+					# 	new_ent = [old_ent[0] + entitysummary, old_ent[1] + keywords, old_ent[2] + [info]]
+					# 	namedidentities[entity.lower()] = new_ent
+					# else:
+					namedidentities[entity.lower()] = [entitysummary, keywords, [info]]
 
 			# pass named entities to template
 			# print namedidentities.values()
