@@ -46,7 +46,7 @@ def allowed_file(filename):
 #render login
 @app.route('/', methods=['GET'])
 def home():
-	return render_template('home.html')
+	return render_template('home.html', cwd=(os.getcwd()))
 
 #render login
 @app.route('/app', methods=['GET', 'POST'])
