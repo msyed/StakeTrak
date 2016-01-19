@@ -22,6 +22,18 @@ def dbcustomdata(entity_id, custom_data):
 	conn.close()
 	return 0
 
+def trymakeusertable():
+	conn = sqlite3.connect("ASG.db")
+	c = conn.cursor()
+	val = c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='USERS'")
+	if cursolen(val.fetchall()):
+		return
+	c.execute('''CREATE TABLE USERS
+       (USERID INTEGER PRIMARY KEY autoincrement,
+       USERNAME TEXT NOT NULL,
+       HASHEDPASSWORD TEXT NOT NULL)''')
+	return
+
 def dbinsert(entity_dict):
 	# hpdict
 	# {'Name': [['summary'], [('key', 2.4), ('words', 1.3)], ['location'], [other1, other2]]}
@@ -29,7 +41,7 @@ def dbinsert(entity_dict):
 	conn = sqlite3.connect("ASG.db")
 	c = conn.cursor()
 
-	val = c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='LOCATIONS'")
+	val = c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='ENTITIES'")
 	l = cursorlen(val.fetchall())
 	if l == 0:
 		print "ABOUT TO CREATE A TABLE!"
@@ -61,9 +73,12 @@ def dbinsert(entity_dict):
 		       ENTITYID2 INTEGER NOT NULL,
 		       COUNT INTEGER NOT NULL)''')
 
+	print entity_dict
 	for entity_name in entity_dict.keys():
 		#0 index = summaries, 1st index = keys, 2nd index = links
 		sum_key_loc = entity_dict[entity_name]
+		print "ENTITY NAME"
+		print entity_name
 		name_no_apostrophes = entity_name.replace("'", "")
 		summary_no_apostrophes = [i.replace("'", "") for i in sum_key_loc[0]]
 		c.execute("SELECT * FROM ENTITIES WHERE NAME='" + name_no_apostrophes + "' ")
@@ -111,12 +126,7 @@ def dbinsert(entity_dict):
 		for key in k_keys_sorted_by_scores:
 			c.execute("INSERT INTO TAGS(ENTITYID, TAG, SCORE) VALUES (?, ?, ?)", (entity_id, key, current_keywords_dict[key]))
 
-	conn.commit()
-	conn.close()
 
-
-# Insert the mentions.
-def mentionsinsert(entity_dict):
 	entity_objects = []
 	for entity_name in entity_dict.keys():
 		c.execute("SELECT ENTITYID FROM ENTITIES WHERE NAME=?", (entity_name,))
@@ -130,6 +140,8 @@ def mentionsinsert(entity_dict):
 		else:
 			c.execute("SELECT * FROM MENTIONEDWITH WHERE ENTITYID2=?", (entity_id,))
 
+	conn.commit()
+	conn.close()
 
 
 def dbquery(query):

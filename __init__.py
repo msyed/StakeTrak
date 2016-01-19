@@ -50,6 +50,8 @@ def home():
 @app.route('/app', methods=['GET', 'POST'])
 def login():
 
+	trymakeusertable()
+
 	if 'username' in session:
 		return redirect(url_for('index'))
 
