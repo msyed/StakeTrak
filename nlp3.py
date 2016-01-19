@@ -36,7 +36,6 @@ def get_entity_names(text, stoplist):
 
     # clean entity names
     with open(stoplist, 'r') as f:
-        stopwords = set(f.read().lower().splitlines())
     newentitylist = [word for word in set(entity_names) if word.lower() not in stopwords]
     #newentitylist = set(entity_names) - set(stopwords)
     return newentitylist
