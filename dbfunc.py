@@ -167,7 +167,7 @@ def dbquery(query):
 	print type(query)
 	conn = sqlite3.connect("ASG.db")
 	wordlist = set(q.split(" "))
-	entity_result = {}
+	entity_result = []
 	with conn:
 		c = conn.cursor()
 		# If we can get Fulltext extension: http://dev.mysql.com/doc/refman/5.0/en/fulltext-natural-language.html
@@ -187,6 +187,8 @@ def dbquery(query):
 		# Return search results by order: NAME, SUMMARY, TAG
 		c.execute("SELECT ENTITYID FROM ENTITIES WHERE NAME LIKE '%" + q + "%' LIMIT 5")
 		name_result = c.fetchall()
+		print "NAME RESULT"
+		print name_result
 		c.execute("SELECT ENTITYID FROM TAGS WHERE TAG LIKE '%" + q + "%' LIMIT 5")
 		tag_result = c.fetchall()
 		c.execute("SELECT ENTITYID FROM SUMMARIES WHERE SENTENCE LIKE '%" + q + "%' LIMIT 5")
@@ -194,13 +196,15 @@ def dbquery(query):
 		c.execute("SELECT ENTITYID FROM LOCATIONS WHERE LOCATION LIKE '%" + q + "%' LIMIT 5")
 		filename_result = c.fetchall()
 
-		entity_result = {}
+		entity_result = []
 		counter = 0
 		unique_output_ids = []
 		for item in name_result + tag_result + summary_result + filename_result:
 			if item not in unique_output_ids:
 				unique_output_ids.append(item)
 		for final_id in unique_output_ids:
+			print "FINAL ID"
+			print final_id
 			# Get name:
 			c.execute("SELECT NAME FROM ENTITIES WHERE ENTITYID=?", final_id)
 			name = c.fetchall()[0][0]
@@ -219,12 +223,14 @@ def dbquery(query):
 			c.execute("SELECT LOCATION FROM LOCATIONS WHERE ENTITYID=?", final_id)
 			location_list = [i[0] for i in c.fetchall()]
 
-			entity_result[final_id[0]] = [name, summary_list, tag_list, location_list]
+			entity_result.append([final_id[0], name, summary_list, tag_list, location_list])
 			counter = counter + 1
 
 	#conn.commit()
 	conn.close()
-	# {72: ['name', ['summary1', 'summary2'], [('key', 2.4), ('words', 1.3)], ['location', 'location2']]}
+	# [[72, 'name', ['summary1', 'summary2'], [('key', 2.4), ('words', 1.3)], ['location', 'location2']], ...]
+	print "ENTITY_RESULT"
+	print entity_result
 	return entity_result
 
 
