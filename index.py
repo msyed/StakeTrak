@@ -1,5 +1,5 @@
 #to delete files
-import os, shutil
+import os, shutil, nlp3
 
 #web application framework written in python
 from flask import Flask, abort, session, request, url_for, make_response, redirect, render_template
@@ -15,8 +15,6 @@ from articles import getArticles
 from dbfunc import dbcustomdata, dbinsert, mentionsinsert, dbquery
 
 from summarizer import FrequencySummarizer
-
-import nlp3
 
 from extractText import extractText
 
@@ -161,6 +159,7 @@ def thirdpage():
 			for info in filenames:
 				#create dictionary of named entities	
 				summarizer = FrequencySummarizer()
+				print info
 				text = extractText("test_files/" + info)
 				if info.split('.')[-1] == "pdf":
 					text = text.decode('utf8')
@@ -168,11 +167,10 @@ def thirdpage():
 				#newsummary = ""
 				#for i in summary:
 				#	newsummary += i
-				entities = nlp3.get_entity_names(text)
+				entities = nlp3.get_entity_names(text, 'entity_stoplist.txt')
 				#location = info.replace("test_files/","")
 			 	keywordobj = rake.Rake("RAKE/SmartStoplist.txt")
 			 	keywords = keywordobj.run(text)
-
 				for entity in entities:
 					entsum = ""
 					entitysummary = nlp3.sentextract(text, entity)

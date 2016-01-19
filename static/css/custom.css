@@ -1,11 +1,16 @@
 
+body {
+    background-image: url(../img/bg.jpg);
+    background-size: 100% auto;
+    
+}
 
 .cf:before, .cf:after{
     content:""; 
     display:table; 
 }
 
-.cf:after{
+.cf:after {
     clear:both;
 }
 
@@ -13,6 +18,15 @@
     zoom:1; !important
 }    
 
+.loginfields
+{
+    width: 50%;
+    height: 50%;
+    overflow: auto;
+    margin: auto;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+}
 
 /* Form wrapper styling */
 .form-wrapper {

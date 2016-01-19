@@ -144,6 +144,9 @@ class Rake(object):
         #return sorted_keywords
         return top_fifteen_words
 
+
+
+
 # if test:
     # text = getText('elchapo.rtf')
 

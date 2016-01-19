@@ -75,7 +75,7 @@
                     <a href="{{ url_for('thirdpage') }}?q={{ keyword[0] }}" style="color: #CC0000">{% print keyword[0] %}</a>
                   {% endfor %}
                 </p>
-                
+
                 <p> 
                 {% for location in sum_key_loc[2] %}
                   <p>Found in <a href="{{ url_for('thirdpage') }}?q={{ location }}" style="color: #CC0000">{% print location %}</a></p>
@@ -106,6 +106,7 @@
                 <a href="{% print sum_key_loc[7] %}" style="color: #CC0000">{% print sum_key_loc[7] %}</a>
                 
                 <a href="{% print sum_key_loc[8] %}" style="color: #CC0000">{% print sum_key_loc[8] %}</a> -->
+
                 <!-- line breaks following each entry -->
                 <br> 
                 <br>  

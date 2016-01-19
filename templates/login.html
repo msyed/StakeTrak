@@ -22,18 +22,21 @@
     <!-- Custom Fonts -->
     <link href="{{ url_for('static',filename='') }}font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">  
     
+    <!-- My Custom CSS form Scratch -->
+    <link href="{{ url_for('static', filename='') }}css/custom.css" rel="stylesheet">
+
   </head>
-  <body background="../static/img/firstbackground.gif" >
-    <div class="container" style="text-align:center">
+  <body>
+    <div class ="loginfields" style="text-align:center">
       <h1>Welcome to StakeTrak</h1>
-      <h3>Please log in</h3>
+      <h3>Sign In</h3>
       <br>
       <form action="" method="post">
-        <input type="text" placeholder="Username" name="username" value="{{
-          request.form.username }}">
-         <input type="password" placeholder="Password" name="password" value="{{
-          request.form.password }}">
-        <input class="btn btn-default" type="submit" value="Login">
+        <p><input type="text" placeholder="Username" name="username" value="{{
+          request.form.username }}"><p>
+         <p><input type="password" placeholder="Password" name="password" value="{{
+          request.form.password }}"></p>
+        <p><input class="btn btn-default" type="submit" value="Login"></p>
       </form>
       {% if error %}
         <p class="error"><strong>Error:</strong> {{ error }}
