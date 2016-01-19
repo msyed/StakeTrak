@@ -26,7 +26,7 @@ def trymakeusertable():
 	conn = sqlite3.connect("ASG.db")
 	c = conn.cursor()
 	val = c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='USERS'")
-	if cursolen(val.fetchall()):
+	if cursorlen(val.fetchall()):
 		return
 	c.execute('''CREATE TABLE USERS
        (USERID INTEGER PRIMARY KEY autoincrement,

@@ -12,9 +12,9 @@ from wikigrabber import gatherer as gr
 
 from articles import getArticles
 
-from dbfunc import dbcustomdata, dbinsert, dbquery
+from dbfunc import dbcustomdata, dbinsert, dbquery, trymakeusertable
 
-from summarizer import FrequencySummarizer
+from summarizer import FrequencySummarizer 
 
 import nlp3
 
