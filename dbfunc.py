@@ -104,6 +104,9 @@ def dbinsert(entity_dict):
 		c.execute("SELECT ENTITYID FROM ENTITIES WHERE NAME=?", (name_no_apostrophes,))
 		# check if more than one element, which would be a problem.
 		entity_id = c.fetchall()[0][0]
+		print "c.fetchall()", c.fetchall()
+		print "c.fetchall()[0]", c.fetchall()[0]
+		print "c.fetchall()[0][0]", c.fetchall()[0][0]
 		ids.append(entity_id)
 		for location in sum_key_loc[2]:
 			c.execute("INSERT INTO LOCATIONS(ENTITYID, LOCATION) VALUES (?, ?)", (entity_id, location))
