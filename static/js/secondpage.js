@@ -58,14 +58,14 @@ $(document).ready(function() {
     var lastSecond = 0;
     var loadingInterval = setInterval(function() {
       seconds.animate(lastSecond / total, function() {
-          seconds.setText(Math.floor((lastSecond*100)/total));
-          lastSecond = lastSecond + 1;
-          if (lastSecond > total) {
-            clearInterval(this);
-          }
+        var percent = Math.floor((lastSecond*100)/total);
+        seconds.setText(percent);
+        lastSecond = lastSecond + 1;
+        if (percent > 98) {
+          clearInterval(loadingInterval);
+        }
       });
     }, 1000);
-
 
   });
 

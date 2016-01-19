@@ -16,7 +16,7 @@ def extract_entity_names(t):
     return entity_names
 
 
-def get_entity_names(text):
+def get_entity_names(text, stoplist):
     entity_names = []
     sentences = nltk.sent_tokenize(text)
     tokenized_sentences = [nltk.word_tokenize(sentence) for sentence in sentences]
@@ -32,7 +32,15 @@ def get_entity_names(text):
 # Print all entity names
 # print entity_names
 # return unique entity names
-    return set(entity_names)
+    #return set(entity_names)
+
+    # clean entity names
+    with open(stoplist, 'r') as f:
+        stopwords = set(f.read().lower().splitlines())
+    newentitylist = [word for word in set(entity_names) if word.lower() not in stopwords]
+    #newentitylist = set(entity_names) - set(stopwords)
+    return newentitylist
+
 
 # get sentences in which the person appears
 def sentextract(text, entity):
@@ -47,6 +55,9 @@ def sentextract(text, entity):
             tensent.append(sent)
             count += 1
     return tensent
+
+
+
 
 
 

@@ -1,5 +1,5 @@
 #to delete files
-import os, shutil
+import os, shutil, nlp3
 
 #web application framework written in python
 from flask import Flask, abort, session, request, url_for, make_response, redirect, render_template
@@ -12,11 +12,9 @@ from wikigrabber import gatherer as gr
 
 from articles import getArticles
 
-from dbfunc import dbinsert, dbquery
+from dbfunc import dbcustomdata, dbinsert, dbquery
 
 from summarizer import FrequencySummarizer
-
-import nlp3
 
 from extractText import extractText
 
@@ -102,7 +100,6 @@ def secondpage():
 	return render_template('secondpage.html')
 
 @app.route('/dbsecondpage')
-
 def dbsecondpage():
 	if not 'username' in session:
 		return abort(404)
@@ -130,6 +127,13 @@ def uploader():
 	# if request.method == 'GET':
 	#   	return redirect(url_for('index'))
 
+@app.route('/customdata', methods=['POST', 'GET'])
+def customdata():
+	data = request.args.get('data', '')
+	## write data to db
+	dbcustomdata(1, data)
+	return redirect(url_for('index'))
+
 #render third page
 @app.route('/thirdpage', methods=['GET', 'POST'])
 def thirdpage():
@@ -143,7 +147,6 @@ def thirdpage():
 
 		#get file names from folder of files
 		else:
-			count = 0
 			namedidentities = {}
 			filenames = os.listdir('test_files/') 
 			
@@ -156,6 +159,7 @@ def thirdpage():
 			for info in filenames:
 				#create dictionary of named entities	
 				summarizer = FrequencySummarizer()
+				print info
 				text = extractText("test_files/" + info)
 				if info.split('.')[-1] == "pdf":
 					text = text.decode('utf8')
@@ -163,25 +167,20 @@ def thirdpage():
 				#newsummary = ""
 				#for i in summary:
 				#	newsummary += i
-				entities = nlp3.get_entity_names(text)
+				entities = nlp3.get_entity_names(text, 'entity_stoplist.txt')
 				#location = info.replace("test_files/","")
 			 	keywordobj = rake.Rake("RAKE/SmartStoplist.txt")
 			 	keywords = keywordobj.run(text)
-
-			 	articles = "" #insert Austin's stuff the 
 				for entity in entities:
 					entsum = ""
 					entitysummary = nlp3.sentextract(text, entity)
 					# TODO could have more than one file with same name uploaded
-					namedidentities[count] = [entity.lower(), entitysummary, keywords, [info]]
-					count += 1 
-
-				# NOTE: REIMPLEMENT WHEN API CALL LIMIT GETS FIXED instead of above for loop
-				# for entity in entities:
-				# 	# find articles based on each named entity
-				# 	articles = getArticles('%s' % entity)
-				# 	namedidentities[count] = [entity, newsummary, keywords, info, articles[0], articles[1], articles[2], articles[3], articles[4]]
-				# 	count += 1 
+					if entity in namedidentities.keys():
+						old_ent = namedidentities[entity.lower()]
+						new_ent = [old_ent[0] + entitysummary, old_ent[1] + keywords, old_ent[2] + [info]]
+						namedidentities[entity.lower()] = new_ent
+					else:
+						namedidentities[entity.lower()] = [entitysummary, keywords, [info]]
 
 			# pass named entities to template
 			# print namedidentities.values()
