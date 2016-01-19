@@ -198,7 +198,6 @@ def thirdpage():
 						new_ent = [old_ent[0] + entitysummaries, list(set(old_ent[1] + keywords)), list(set(old_ent[2] + [info])), list(set(old_ent[3] + entitiescopy))]
 						namedidentities[entity.lower()] = new_ent
 					else:
-						#print temp.lower() + "BARACK MY NIGGER"
 						namedidentities[entity.lower()] = [entitysummaries, keywords, [info], entitiescopy]
 					#print "PLease let Barack be here"
 					entitiescopy.append(entity)
