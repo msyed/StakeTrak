@@ -206,9 +206,16 @@ def thirdpage():
 
 			# pass named entities to template
 			# print namedidentities.values()
-			#print (namedidentities)
-			dbinsert(namedidentities)
-			return render_template('thirdpage.html', wiki=namedidentities, filenames1=filenames)
+			ids = dbinsert(namedidentities)
+			entities_with_id = []
+			assert(len(ids) == len(namedidentities.keys()))
+			i = 0
+			for name in namedidentities.keys():
+				entities_with_id.append([ids[i]] + [name] + namedidentities[name])
+				i = i + 1
+			# entities_with_id:
+			# [[72, 'NAME', ['summary'], [('key', 6.9)], ['location.txt'], ['related_1', 'related_2'], ...]
+			return render_template('thirdpage.html', wiki=entities_with_id, filenames1=filenames)
 		
 	#prevent GET requests for third page
 	if request.method == 'GET':

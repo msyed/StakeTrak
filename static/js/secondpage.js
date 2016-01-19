@@ -29,7 +29,7 @@ $(document).ready(function() {
         multiplier = 0.394;
       }
       console.log(unit.toLowerCase());
-      if (unit.toLowerCase() == "m") {
+      if (unit.toLowerCase() == "m" || unit.toLowerCase() == "mb") {
         multiplier = multiplier * 1024;
         console.log("megabytes!");
       }

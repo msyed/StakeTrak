@@ -49,20 +49,20 @@
         <body>
 
         <!-- iterate through each named person and print relevant details-->
-        {% for name, sum_key_loc in wiki.iteritems(): %}
-          <div class="name">
+        {% for id_name_sum_key_loc in wiki: %}
+          <div data-internalid="{% print id_name_sum_key_loc[0] %}" class="name">
             <div class="intro-text">
               <br>
 
               <!-- provide name of person-->                             
-              <span class="name"> {% print name %} </span>
+              <span class="name"> {% print id_name_sum_key_loc[1] %} </span>
               <hr class="star-light">
               <div class="row">
 
                 <!-- provide summary--> 
                 {% print "Sentences in which Entity Appears: " %}
                 <p> 
-                  {% for sentence in sum_key_loc[0]: %}
+                  {% for sentence in id_name_sum_key_loc[2]: %}
                     <p>{% print sentence %} </p>
                   {% endfor %}
                 </p>
@@ -71,13 +71,13 @@
 
                 <p>
                   Keywords: 
-                  {% for keyword in sum_key_loc[1] %}
+                  {% for keyword in id_name_sum_key_loc[3] %}
                     <a href="{{ url_for('thirdpage') }}?q={{ keyword[0] }}" style="color: #CC0000">{% print keyword[0] %}</a>
                   {% endfor %}
                 </p>
 
                 <p> 
-                {% for location in sum_key_loc[2] %}
+                {% for location in id_name_sum_key_loc[4] %}
                   <p>Found in <a href="{{ url_for('thirdpage') }}?q={{ location }}" style="color: #CC0000">{% print location %}</a></p>
                 {% endfor %}
                 </p>
@@ -91,19 +91,6 @@
                     <input type="text" style="color: #000000" name="customdata">
                     <input type="submit" value="Submit">
                   </form>
-                </p>                
-<!--                 <p> Recent News Articles </p>
-                <a href="{% print sum_key_loc[4] %}" style="color: #CC0000">{% print sum_key_loc[4] %}</a>
-
-                <a href="{% print sum_key_loc[5] %}" style="color: #CC0000">{% print sum_key_loc[5] %}</a>
-
-                <a href="{% print sum_key_loc[6] %}" style="color: #CC0000">{% print sum_key_loc[6] %}</a>
-
-                <a href="{% print sum_key_loc[7] %}" style="color: #CC0000">{% print sum_key_loc[7] %}</a>
-                
-                <a href="{% print sum_key_loc[8] %}" style="color: #CC0000">{% print sum_key_loc[8] %}</a> -->
-
-                <!-- line breaks following each entry -->
                 <br> 
                 <br>  
               </div>  
