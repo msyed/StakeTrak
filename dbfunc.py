@@ -97,6 +97,7 @@ def dbinsert(entity_dict):
 		summary_no_apostrophes = [i.replace("'", "") for i in sum_key_loc[0]]
 		c.execute("SELECT * FROM ENTITIES WHERE NAME='" + name_no_apostrophes + "' ")
 		get_entity_result = c.fetchall()
+		print "c.fetcall(): ", c.fetchall
 		# Ensure that entry with that name doesn't already exist
 		if not get_entity_result:
 			c.execute("INSERT INTO ENTITIES(NAME) VALUES (?)", (name_no_apostrophes,))
@@ -104,6 +105,7 @@ def dbinsert(entity_dict):
 		c.execute("SELECT ENTITYID FROM ENTITIES WHERE NAME=?", (name_no_apostrophes,))
 		# check if more than one element, which would be a problem.
 		entity_id = c.fetchall()[0][0]
+		print "entity_id", entity_id
 		ids.append(entity_id)
 		for location in sum_key_loc[2]:
 			c.execute("INSERT INTO LOCATIONS(ENTITYID, LOCATION) VALUES (?, ?)", (entity_id, location))
