@@ -104,11 +104,18 @@ def dbinsert(entity_dict):
 		c.execute("SELECT ENTITYID FROM ENTITIES WHERE NAME=?", (name_no_apostrophes,))
 		# check if more than one element, which would be a problem.
 		entity_id = c.fetchall()[0][0]
+		print "entitiy_id: ", entity_id
 		ids.append(entity_id)
+		print "sum_key_loc[2]: ", sum_key_loc[2]
 		for location in sum_key_loc[2]:
-			c.execute("INSERT INTO LOCATIONS(ENTITYID, LOCATION) VALUES (?, ?)", (entity_id, location))
+			c.execute("SELECT EXISTS(SELECT LOCATION FROM LOCATIONS WHERE ENTITYID=(?))", (entity_id,))
+			if not c.fetchone()[0]:
+				c.execute("INSERT INTO LOCATIONS(ENTITYID, LOCATION) VALUES (?, ?)", (entity_id, location))
+
 		for sentence in sum_key_loc[0]:
-			c.execute("INSERT INTO SUMMARIES(ENTITYID, SENTENCE) VALUES (?, ?)", (entity_id, sentence))
+			c.execute("SELECT EXISTS(SELECT SENTENCE FROM SUMMARIES WHERE SENTENCE=(?))", (sentence,))
+			if not c.fetchone()[0]:
+				c.execute("INSERT INTO SUMMARIES(ENTITYID, SENTENCE) VALUES (?, ?)", (entity_id, sentence))
 
 		# Now deal with tags.
 		c.execute("SELECT TAG, SCORE FROM TAGS WHERE ENTITYID=? ", (entity_id,))
