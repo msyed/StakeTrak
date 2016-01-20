@@ -63,6 +63,7 @@ def delete_entity_by_id(cursor, num):
 	cursor.execute("DELETE FROM ENTITIES WHERE ENTITYID=?",(num,))
 	cursor.execute("DELETE FROM LOCATIONS WHERE ENTITYID=?",(num,))
 	cursor.execute("DELETE FROM MENTIONEDWITH WHERE ENTITYID1=?",(num,))
+	cursor.execute("DELETE FROM MENTIONEDWITH WHERE ENTITYID2=?",(num,))
 	cursor.execute("DELETE FROM SUMMARIES WHERE ENTITYID=?",(num,))
 	cursor.execute("DELETE FROM TAGS WHERE ENTITYID=?",(num,))
 	return
@@ -130,8 +131,8 @@ def write_new_mentions(cursor, mentions_list):
 	cursor.executemany("INSERT INTO MENTIONEDWITH VALUES (?, ?, ?)", mentions_list)
 
 def dbcustomdata(entity_id, custom_data):
-	print "CUSTOM_DATA:"
-	print custom_data
+	#print "CUSTOM_DATA:"
+	#print custom_data
 	conn = sqlite3.connect("ASG.db")
 	c = conn.cursor()
 	c.execute("UPDATE ENTITIES SET CUSTOMDATA = (?) WHERE ENTITYID= (?)", (custom_data, entity_id))
@@ -236,7 +237,7 @@ def dbinsert(entity_dict, max_tags, max_mentions):
 
 
 def dbquery(query):
-	q = urllib.unquote(query).decode('utf8') 
+	q = urllib.unquote(query).encode('utf8') 
 	#print "QUERY:"
 	#print query
 	#print type(query)
