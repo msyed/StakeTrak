@@ -1,7 +1,5 @@
 #to delete files
-import os, shutil
-
-from copy import copy
+import os, shutil, nlp3
 
 #web application framework written in python
 from flask import Flask, abort, session, request, url_for, make_response, redirect, render_template
@@ -14,22 +12,13 @@ from wikigrabber import gatherer as gr
 
 from articles import getArticles
 
-from dbfunc import dbcustomdata, dbinsert, dbquery, trymakeusertable
+from dbfunc import dbcustomdata, dbinsert, dbquery
 
-from summarizer import FrequencySummarizer 
-
-import nlp3
+from summarizer import FrequencySummarizer
 
 from extractText import extractText
 
 from RAKE import rake
-
-
-PRODUCTION = True
-try:
-	os.chdir('var/www/staketrak/staketrak')
-except OSError:
-	PRODUCTION = False
 
 #define constants
 UPLOAD_FOLDER = 'test_files'
@@ -53,13 +42,11 @@ def allowed_file(filename):
 #render login
 @app.route('/', methods=['GET'])
 def home():
-	return render_template('home.html', cwd=(os.getcwd()))
+	return render_template('home.html')
 
 #render login
 @app.route('/app', methods=['GET', 'POST'])
 def login():
-
-	trymakeusertable()
 
 	if 'username' in session:
 		return redirect(url_for('index'))
@@ -88,10 +75,10 @@ def login():
 def index():
 	if 'username' in session:
 		# logged in!
-		#print "RENDER_TEMPLATE:"
+		print "RENDER_TEMPLATE:"
 		#print render_template('index.html', username=session['username'])
-		#print "USERNAME:"
-		#print session['username']
+		print "USERNAME:"
+		print session['username']
 		return render_template('index.html', username=session['username'])
 	else:
 		return abort(404)
@@ -103,8 +90,7 @@ def secondpage():
 		return abort(404)
 	#adapted from http://stackoverflow.com/questions/185936/delete-folder-contents-in-python
 	#delete all old files when renderding second page to ensure new upload screen for user
-	files = os.listdir(UPLOAD_FOLDER)
-	for the_file in files:
+	for the_file in os.listdir(UPLOAD_FOLDER):
 		file_path = os.path.join(UPLOAD_FOLDER, the_file)
 		try:
 			if os.path.isfile(file_path):
@@ -161,7 +147,6 @@ def thirdpage():
 
 		#get file names from folder of files
 		else:
-			#print "GETTING FILENAMES"
 			namedidentities = {}
 			filenames = os.listdir('test_files/') 
 			
@@ -169,10 +154,12 @@ def thirdpage():
 			for i in filenames:
 				if i[0] == '.':
 					filenames.remove(i)
+
 			#iterate through each file and run wikigrabber function	
 			for info in filenames:
 				#create dictionary of named entities	
 				summarizer = FrequencySummarizer()
+				print info
 				text = extractText("test_files/" + info)
 				if info.split('.')[-1] == "pdf":
 					text = text.decode('utf8')
@@ -180,49 +167,25 @@ def thirdpage():
 				#newsummary = ""
 				#for i in summary:
 				#	newsummary += i
-				entities = nlp3.get_entity_names(text, "entity_stoplist.txt")
-				print entities
-				entitiescopy = copy(entities)
+				entities = nlp3.get_entity_names(text, 'entity_stoplist.txt')
 				#location = info.replace("test_files/","")
 			 	keywordobj = rake.Rake("RAKE/SmartStoplist.txt")
 			 	keywords = keywordobj.run(text)
-			 	#print "ENTITIES:"
-			 	#print entities
 				for entity in entities:
-					#temp = deepcopy(entity)
-					#print temp
+					entsum = ""
+					entitysummary = nlp3.sentextract(text, entity)
 					# TODO could have more than one file with same name uploaded
-				# NOTE: REIMPLEMENT WHEN API CALL LIMIT GETS FIXED instead of aove for loop
-				# for entity in entities:
-				# 	# find articles based on each named entity
-				# 	articles = getArticles('%s' % entity)
-				# 	namedidentities[count] = [entity, newsummary, keywords, info, articles[0], articles[1], articles[2], articles[3], articles[4]]
-				# 	count += 1 
-					#print entities
-					entitysummaries = nlp3.sentextract(text, entity)
-					entitiescopy.remove(entity)
-					if entity.lower() in namedidentities.keys():
-						old_ent = namedidentities[entity.lower()]
-						new_ent = [old_ent[0] + entitysummaries, list(set(old_ent[1] + keywords)), list(set(old_ent[2] + [info])), list(set(old_ent[3] + entitiescopy))]
-						namedidentities[entity.lower()] = new_ent
-					else:
-						namedidentities[entity.lower()] = [entitysummaries, keywords, [info], entitiescopy]
-					#print "PLease let Barack be here"
-					entitiescopy.append(entity)
-					#print entities
+					# if entity in namedidentities.keys():
+					# 	old_ent = namedidentities[entity.lower()]
+					# 	new_ent = [old_ent[0] + entitysummary, old_ent[1] + keywords, old_ent[2] + [info]]
+					# 	namedidentities[entity.lower()] = new_ent
+					# else:
+					namedidentities[entity.lower()] = [entitysummary, keywords, [info]]
 
 			# pass named entities to template
 			# print namedidentities.values()
-			ids = dbinsert(namedidentities)
-			entities_with_id = []
-			assert(len(ids) == len(namedidentities.keys()))
-			i = 0
-			for name in namedidentities.keys():
-				entities_with_id.append([ids[i]] + [name] + namedidentities[name])
-				i = i + 1
-			# entities_with_id:
-			# [[72, 'NAME', ['summary'], [('key', 6.9)], ['location.txt'], ['related_1', 'related_2'], ...]
-			return render_template('thirdpage.html', wiki=entities_with_id, filenames1=filenames)
+			dbinsert(namedidentities)
+			return render_template('thirdpage.html', wiki=namedidentities, filenames1=filenames)
 		
 	#prevent GET requests for third page
 	if request.method == 'GET':
@@ -236,15 +199,6 @@ def thirdpage():
 				return render_template('emptysearch.html')
 	  	return redirect(url_for('index'))
 
-@app.route("/clean", methods=['POST'])
-def clean():
-	to_clean_id = request.args.get('id', '')
-	if request.method == 'POST':
-		
-
-
-	return "200 - OK!"
-		
 
 @app.route("/logout", methods=['POST'])
 def logout():

@@ -24,6 +24,8 @@
   <!-- Custom Fonts -->
   <link href="{{ url_for('static', filename='') }}font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
+  <script src="{{ url_for('static', filename='') }}js/jquery.js"></script>
+
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -50,13 +52,13 @@
 
         <!-- iterate through each named person and print relevant details-->
         {% for id_name_sum_key_loc in wiki: %}
-          <div data-internalid="{% print id_name_sum_key_loc[0] %}" class="name">
+          <div class="entity">
             <div class="intro-text">
               <br>
 
               <!-- provide name of person-->                             
-              <span class="name"> {% print id_name_sum_key_loc[1] %} </span>
-              <hr class="star-light">
+              <span data-internalid="{% print id_name_sum_key_loc[0] %}" class="name"> {% print id_name_sum_key_loc[1] %} </span> 
+              <hr class="star-light"> 
               <div class="row">
 
                 <!-- provide summary--> 
@@ -72,25 +74,27 @@
                 <p>
                   Keywords: 
                   {% for keyword in id_name_sum_key_loc[3] %}
-                    <a href="{{ url_for('thirdpage') }}?q={{ keyword[0] }}" style="color: #CC0000">{% print keyword[0] %}</a>
+                    <a href="{{ url_for('thirdpage') }}?q={{ keyword[0] }}" style='color: #ffffff'>{% print keyword[0] %}</a>
                   {% endfor %}
                 </p>
 
                 <p> 
                 {% for location in id_name_sum_key_loc[4] %}
-                  <p>Found in <a href="{{ url_for('thirdpage') }}?q={{ location }}" style="color: #CC0000">{% print location %}</a></p>
+                  <p>Found in <a href="{{ url_for('thirdpage') }}?q={{ location }}" style='color: #ffffff'>{% print location %}</a></p>
                 {% endfor %}
+                <!--style="color: #CC0000"-->
                 </p>
-
+                
                 <!--- insert text box here -->  
                 <p>
                   <form action="/customdata/" method="POST">
                     {% print "Comments:" %}
                     <!--- name -->
                     <br>
-                    <input type="text" style="color: #000000" name="customdata">
+                    <input type="text" style="color: #000000; width: 1000px; height: 100px" name="customdata">
                     <input type="submit" value="Submit">
                   </form>
+
                 <br> 
                 <br>  
               </div>  
@@ -119,6 +123,20 @@
   <script src="{{ url_for('static', filename='') }}js/jquery.js"></script>
   <script src="{{ url_for('static', filename='') }}js/bootstrap.min.js"></script>
 </body>
+
+<script>
+  $(document).ready(function(){
+    $('.name').on('click', function(){
+      console.log(this);
+      var result = confirm("would you like to delete this entity: " + this.innerHTML + "?");
+      if (result) {
+        $.post("/clean?id=" + this.getAttribute('data-internalid'));
+        this.remove()
+      }
+    });
+  });
+</script>
+
 </html>
 
 {% endblock %}

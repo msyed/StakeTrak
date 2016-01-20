@@ -24,6 +24,13 @@ def get_entity_id_by_name(cursor, entity_name):
 	assert(len(name_result) == 1)
 	return id_result[0][0]
 
+def delete_entity_by_id(cursor, num):
+	cursor.execute("DELETE FROM ENTITIES WHERE ENTITYID=?",(num,))
+	cursor.execute("DELETE FROM LOCATIONS WHERE ENTITYID=?",(num,))
+	cursor.execute("DELETE FROM MENTIONEDWITH WHERE ENTITYID1=?",(num,))
+	cursor.execute("DELETE FROM SUMMARIES WHERE ENTITYID=?",(num,))
+	cursor.execute("DELETE FROM TAGS WHERE ENTITYID=?",(num,))
+
 def dbcustomdata(entity_id, custom_data):
 	print "CUSTOM_DATA:"
 	print custom_data
