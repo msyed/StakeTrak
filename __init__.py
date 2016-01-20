@@ -24,6 +24,13 @@ from extractText import extractText
 
 from RAKE import rake
 
+
+PRODUCTION = True
+try:
+	os.chdir('var/www/staketrak/staketrak')
+except OSError:
+	PRODUCTION = False
+
 #define constants
 UPLOAD_FOLDER = 'test_files'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'docx', 'doc'])
@@ -46,7 +53,7 @@ def allowed_file(filename):
 #render login
 @app.route('/', methods=['GET'])
 def home():
-	return render_template('home.html')
+	return render_template('home.html', cwd=(os.getcwd()))
 
 #render login
 @app.route('/app', methods=['GET', 'POST'])
@@ -96,7 +103,8 @@ def secondpage():
 		return abort(404)
 	#adapted from http://stackoverflow.com/questions/185936/delete-folder-contents-in-python
 	#delete all old files when renderding second page to ensure new upload screen for user
-	for the_file in os.listdir(UPLOAD_FOLDER):
+	files = os.listdir(UPLOAD_FOLDER)
+	for the_file in files:
 		file_path = os.path.join(UPLOAD_FOLDER, the_file)
 		try:
 			if os.path.isfile(file_path):
