@@ -14,7 +14,7 @@ from wikigrabber import gatherer as gr
 
 from articles import getArticles
 
-from dbfunc import dbcustomdata, dbinsert, dbquery, trymakeusertable
+from dbfunc import dbcustomdata, delete_entity_by_id, dbinsert, dbquery, trymakeusertable
 
 from summarizer import FrequencySummarizer 
 
@@ -34,6 +34,10 @@ except OSError:
 #define constants
 UPLOAD_FOLDER = 'test_files'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'docx', 'doc'])
+
+MAX_SENT_PER_ENTITY = 10
+MAX_TAGS_PER_ENTITY = 20
+MAX_MENTIONS_PER_ENTITY = 20
 
 #create a flask instance 
 app = Flask(__name__)
@@ -164,7 +168,7 @@ def thirdpage():
 			#print "GETTING FILENAMES"
 			namedidentities = {}
 			filenames = os.listdir('test_files/') 
-			
+			total_entity_list = []
 			#remove hidden files
 			for i in filenames:
 				if i[0] == '.':
@@ -199,7 +203,7 @@ def thirdpage():
 				# 	namedidentities[count] = [entity, newsummary, keywords, info, articles[0], articles[1], articles[2], articles[3], articles[4]]
 				# 	count += 1 
 					#print entities
-					entitysummaries = nlp3.sentextract(text, entity)
+					entitysummaries = nlp3.sentextract(text, entity, MAX_SENT_PER_ENTITY)
 					entitiescopy.remove(entity)
 					if entity.lower() in namedidentities.keys():
 						old_ent = namedidentities[entity.lower()]
@@ -211,18 +215,25 @@ def thirdpage():
 					entitiescopy.append(entity)
 					#print entities
 
-			# pass named entities to template
-			# print namedidentities.values()
-			ids = dbinsert(namedidentities)
-			entities_with_id = []
-			assert(len(ids) == len(namedidentities.keys()))
-			i = 0
-			for name in namedidentities.keys():
-				entities_with_id.append([ids[i]] + [name] + namedidentities[name])
-				i = i + 1
+				# At this point, namedidenties is all of the named entities for a given file:
+				# {'Name': [[summaries], [keywords], [filename], [relatedeEntities]]}
+
+				# pass named entities to template
+				# print namedidentities.values()
+				names_ids_tags_mentions = dbinsert(namedidentities, MAX_TAGS_PER_ENTITY, MAX_MENTIONS_PER_ENTITY)
+
+				entities_with_ids_tags_mentions = []
+				assert(len(names_ids_tags_mentions) == len(namedidentities.keys()))
+				for new_entity_values in names_ids_tags_mentions:
+					entities_with_ids_tags_mentions.append([new_entity_values[1], new_entity_values[0], namedidentities[new_entity_values[0]][0], namedidentities[new_entity_values[0]][2], new_entity_values[3]])
+				namedidentities = {}
+				total_entity_list = total_entity_list + entities_with_ids_tags_mentions
+
 			# entities_with_id:
 			# [[72, 'NAME', ['summary'], [('key', 6.9)], ['location.txt'], ['related_1', 'related_2'], ...]
-			return render_template('thirdpage.html', wiki=entities_with_id, filenames1=filenames)
+			print "TOTAL_ENTITY_LIST[0]"
+			print total_entity_list[0]
+			return render_template('thirdpage.html', wiki=total_entity_list, filenames1=filenames)
 		
 	#prevent GET requests for third page
 	if request.method == 'GET':
@@ -239,11 +250,11 @@ def thirdpage():
 @app.route("/clean", methods=['POST'])
 def clean():
 	to_clean_id = request.args.get('id', '')
-	if request.method == 'POST':
-		
-
-
-	return "200 - OK!"
+	if to_clean_id and request.method == 'POST':
+		conn = sqlite3.connect("ASG.db")
+		c = conn.cursor()
+		delete_entity_by_id(c, to_clean_id)
+		return "200 - OK!"
 		
 
 @app.route("/logout", methods=['POST'])

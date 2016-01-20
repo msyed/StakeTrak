@@ -4,13 +4,42 @@ from heapq import nlargest
 
 import urllib
 
-MAX_KEYS_PER_ENTITY = 20
-
 # returns 0 if empty query, 1 if query returned stuff
 def cursorlen(cursor):
 	for item in cursor:
 		return 1
 	return 0
+
+def create_tables(cursor):
+	#print "ABOUT TO CREATE A TABLE!"
+	# create table entries (id integer primary key autoincrement, data)
+	cursor.execute('''CREATE TABLE ENTITIES
+	       (ENTITYID INTEGER  PRIMARY KEY autoincrement,
+	       NAME TEXT NOT NULL,
+	       CUSTOMDATA TEXT,
+	       UNIQUE(NAME))''')
+
+	# This table stores the tags. Each entityid may appear more than once,
+	# and each tag may appear more than once, but no pair may appear
+	# more than once!
+	cursor.execute('''CREATE TABLE TAGS
+	       (ENTITYID INTEGER  NOT NULL,
+	       TAG TEXT NOT NULL,
+	       SCORE REAL)''')
+
+	cursor.execute('''CREATE TABLE SUMMARIES
+	       (ENTITYID INTEGER NOT NULL,
+	       SENTENCE TEXT NOT NULL)''')
+
+	cursor.execute('''CREATE TABLE MENTIONEDWITH
+	       (ENTITYID1 INTEGER NOT NULL,
+	       ENTITYID2 INTEGER NOT NULL,
+	       COUNT INTEGER NOT NULL,
+	       UNIQUE(ENTITYID1, ENTITYID2))''')
+	
+	cursor.execute('''CREATE TABLE LOCATIONS
+	       (ENTITYID INTEGER  NOT NULL,
+	       LOCATION TEXT NOT NULL)''')
 
 def get_entity_name_by_id(cursor, entity_id):
 	cursor.execute("SELECT NAME FROM ENTITIES WHERE ENTITYID=? ", (entity_id,))
@@ -19,9 +48,15 @@ def get_entity_name_by_id(cursor, entity_id):
 	return name_result[0][0]
 
 def get_entity_id_by_name(cursor, entity_name):
-	cursor.execute("SELECT ENTITYID FROM ENTITIES WHERE NAME=? ", (entity_name.replace("'", ""),))
+	cursor.execute("SELECT ENTITYID FROM ENTITIES WHERE NAME=? ", (entity_name.replace("'", "").lower(),))
 	id_result = cursor.fetchall()
-	assert(len(name_result) == 1)
+	print "ID RESULT:"
+	print id_result
+	print "ENTITY NAME:"
+	print entity_name
+	print "SQL ARG:"
+	print entity_name.replace("'", "").lower()
+	assert(len(id_result) == 1)
 	return id_result[0][0]
 
 def delete_entity_by_id(cursor, num):
@@ -30,6 +65,69 @@ def delete_entity_by_id(cursor, num):
 	cursor.execute("DELETE FROM MENTIONEDWITH WHERE ENTITYID1=?",(num,))
 	cursor.execute("DELETE FROM SUMMARIES WHERE ENTITYID=?",(num,))
 	cursor.execute("DELETE FROM TAGS WHERE ENTITYID=?",(num,))
+	return
+
+# returns entity id.
+# if name exists, return id.
+# if name doesnt exist, create new and return id.
+def insert_entity_by_name(cursor, entity_name):
+	cursor.execute("INSERT OR IGNORE INTO ENTITIES(NAME) VALUES (?)", (entity_name.lower(),))
+	entity_id = cursor.lastrowid
+	# if user already exists:
+	if entity_id == 0:
+		cursor.execute("SELECT ENTITYID FROM ENTITIES WHERE NAME=?", (entity_name.lower(),))
+		res = cursor.fetchall()
+		print "SELECTED ID:"
+		print res
+		return res[0][0]
+	print "INSERTED:"
+	print entity_name
+	print "WITH ID:"
+	print entity_id
+	return entity_id
+
+# returns old top tags and deletes them from the database
+def get_delete_tags_by_id(cursor, entity_id):
+	cursor.execute("SELECT TAG, SCORE FROM TAGS WHERE ENTITYID=? ", (entity_id,))
+	current_keywords = cursor.fetchall()
+	cursor.execute("DELETE FROM TAGS WHERE ENTITYID=? ", (entity_id,))
+	return current_keywords
+
+# gets top keywords from a list of (tag, score) tuples.
+def top_tags(all_tags, max_tags):
+	return sorted(all_tags, key=(lambda s: -s[1]))[:max_tags]
+
+
+def get_delete_mentions_by_id(cursor, entity_id):
+	cursor.execute("SELECT * FROM MENTIONEDWITH WHERE ENTITYID1=? OR ENTITYID2=?", (entity_id, entity_id))
+	current_mentions = cursor.fetchall()
+	cursor.execute("DELETE FROM MENTIONEDWITH WHERE ENTITYID1=? OR ENTITYID2=?", (entity_id, entity_id))
+	return current_mentions
+
+def top_mentions(all_mentions, max_mentions):
+	return sorted(all_mentions , key=(lambda s: -s[2]))[:max_mentions]
+
+# insert or update. Return count
+def insert_mentions_by_ids(cursor, id1, id2):
+	assert(id1 != id2)
+	dbq = "INSERT OR IGNORE INTO MENTIONEDWITH(ENTITYID1, ENTITYID2, COUNT) VALUES (?, ?, 1)"
+	if id1 < id2:
+		cursor.execute(dbq, (id1, id2))
+		some_id = cursor.lastrowid
+		if some_id == 0:
+			cursor.execute("UPDATE MENTIONEDWITH SET COUNT = COUNT + 1 WHERE ENTITYID1=? AND ENTITYID2=?", (id1, id2))
+		cursor.execute("SELECT COUNT FROM MENTIONEDWITH WHERE ENTITYID1=? AND ENTITYID2=?", (id1, id2))
+		return cursor.fetchall()[0][0]
+	else:
+		cursor.execute(dbq, (id2, id1))
+		some_id = cursor.lastrowid
+		if some_id == 0:
+			cursor.execute("UPDATE MENTIONEDWITH SET COUNT = COUNT + 1 WHERE ENTITYID1=? AND ENTITYID2=?", (id2, id1))
+		cursor.execute("SELECT COUNT FROM MENTIONEDWITH WHERE ENTITYID1=? AND ENTITYID2=?", (id2, id1))
+		return cursor.fetchall()[0][0]
+
+def write_new_mentions(cursor, mentions_list):
+	cursor.executemany("INSERT INTO MENTIONEDWITH VALUES (?, ?, ?)", mentions_list)
 
 def dbcustomdata(entity_id, custom_data):
 	print "CUSTOM_DATA:"
@@ -53,7 +151,8 @@ def trymakeusertable():
        HASHEDPASSWORD TEXT NOT NULL)''')
 	return
 
-def dbinsert(entity_dict):
+
+def dbinsert(entity_dict, max_tags, max_mentions):
 	# hpdict
 	# {'Name': [['summary'], [('key', 2.4), ('words', 1.3)], ['location'], [other1, other2]]}
 
@@ -63,37 +162,9 @@ def dbinsert(entity_dict):
 	val = c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='ENTITIES'")
 	l = cursorlen(val.fetchall())
 	if l == 0:
-		#print "ABOUT TO CREATE A TABLE!"
-
-		# create table entries (id integer primary key autoincrement, data)
-		c.execute('''CREATE TABLE ENTITIES
-		       (ENTITYID INTEGER  PRIMARY KEY autoincrement,
-		       NAME TEXT NOT NULL,
-		       CUSTOMDATA TEXT )''')
-
-		# This table stores the tags. Each entityid may appear more than once,
-		# and each tag may appear more than once, but no pair may appear
-		# more than once!
-		c.execute('''CREATE TABLE TAGS
-		       (ENTITYID INTEGER  NOT NULL,
-		       TAG TEXT NOT NULL,
-		       SCORE REAL)''')
-
-		c.execute('''CREATE TABLE SUMMARIES
-		       (ENTITYID INTEGER NOT NULL,
-		       SENTENCE TEXT NOT NULL)''')
-		
-		c.execute('''CREATE TABLE LOCATIONS
-		       (ENTITYID INTEGER  NOT NULL,
-		       LOCATION TEXT NOT NULL)''')
-
-		c.execute('''CREATE TABLE MENTIONEDWITH
-		       (ENTITYID1 INTEGER NOT NULL,
-		       ENTITYID2 INTEGER NOT NULL,
-		       COUNT INTEGER NOT NULL)''')
-
-
-
+		create_tables(c)
+		conn.commit()
+	names_ids_tags_mentions = []
 	ids = []
 	for entity_name in entity_dict.keys():
 		#0 index = summaries, 1st index = keys, 2nd index = links
@@ -102,17 +173,12 @@ def dbinsert(entity_dict):
 		#print entity_name
 		name_no_apostrophes = entity_name.replace("'", "")
 		summary_no_apostrophes = [i.replace("'", "") for i in sum_key_loc[0]]
-		c.execute("SELECT * FROM ENTITIES WHERE NAME='" + name_no_apostrophes + "' ")
-		get_entity_result = c.fetchall()
-		# Ensure that entry with that name doesn't already exist
-		if not get_entity_result:
-			c.execute("INSERT INTO ENTITIES(NAME) VALUES (?)", (name_no_apostrophes,))
-
-		c.execute("SELECT ENTITYID FROM ENTITIES WHERE NAME=?", (name_no_apostrophes,))
-		# check if more than one element, which would be a problem.
-		entity_id = c.fetchall()[0][0]
-		print "entitiy_id: ", entity_id
+		entity_id = insert_entity_by_name(c, entity_name)
 		ids.append(entity_id)
+		conn.commit()
+	for entity_id in ids:
+		entity_name = get_entity_name_by_id(c, entity_id)
+		print "entitiy_id: ", entity_id
 		print "sum_key_loc[2]: ", sum_key_loc[2]
 		for location in sum_key_loc[2]:
 			c.execute("SELECT EXISTS(SELECT LOCATION FROM LOCATIONS WHERE ENTITYID=(?))", (entity_id,))
@@ -124,55 +190,49 @@ def dbinsert(entity_dict):
 			if not c.fetchone()[0]:
 				c.execute("INSERT INTO SUMMARIES(ENTITYID, SENTENCE) VALUES (?, ?)", (entity_id, sentence))
 
-		# Now deal with tags.
-		c.execute("SELECT TAG, SCORE FROM TAGS WHERE ENTITYID=? ", (entity_id,))
-		current_keywords = c.fetchall()
-		c.execute("DELETE FROM TAGS WHERE ENTITYID=? ", (entity_id,))
-		current_keywords_dict = {}
-		# initialize dict to what is in db
-		#print "current_keywords:"
-		#print current_keywords
-		for (keyword, score) in current_keywords:
-			# convert from unicode.
-			current_keywords_dict[keyword] = score
+		# Tag stuff.
+		old_tags = get_delete_tags_by_id(c, entity_id)
+		conn.commit()
+		tag_list = [(entity_id, tag_tup[0], tag_tup[1]) for tag_tup in top_tags(old_tags + sum_key_loc[1], max_tags)]
+		c.executemany("INSERT INTO TAGS(ENTITYID, TAG, SCORE) VALUES (?, ?, ?)", tag_list)
+		conn.commit()
 
-		minimum_score = 0
-		if current_keywords:
-			minimum_score = min([i[1] for i in current_keywords])
-		# now check if any values need to be updated
-		for (keyword, score) in sum_key_loc[1]:
-			# If the keyword is already in the database for that name,
-			# check if the score is bigger, in which case add it to 
-			# the dictionary that will eventually be input into the db.
-			if keyword in current_keywords_dict.keys():
-				if score > current_keywords_dict[keyword]:
-					current_keywords_dict[keyword] = score
-					# update minimum
-					minimum_score = min([current_keywords_dict[k] for k in current_keywords_dict.keys()])
+		# MentionedWith stuff.
+
+		# UPDATE MENTIONEDWITH SET COUNT = COUNT + 1 WHERE ENTITYID1 = 1
+		# entity_objects.append(result[0])
+		# list of mentioned names.
+		old_mentions = get_delete_mentions_by_id(c, entity_id)
+		new_mention_ids = []
+		for mention in sum_key_loc[3]:
+			mentioned_id = get_entity_id_by_name(c, mention)
+			conn.commit()
+			new_mention_ids.append(mentioned_id)
+		new_mentions = []
+		for old_mention in old_mentions:
+			if old_mention[0] == entity_id:
+				if old_mention[1] in new_mention_ids:
+					new_mentions.append((old_mention[0], old_mention[1], old_mention[2] + 1))
+				else:
+					new_mentions.append(old_mention)
+			# old_mention[1] == entity_id
 			else:
-				# could do a score check here
-				current_keywords_dict[keyword] = score
-		k_keys_sorted_by_scores = nlargest(MAX_KEYS_PER_ENTITY, current_keywords_dict, key=current_keywords_dict.get)
-		for key in k_keys_sorted_by_scores:
-			c.execute("INSERT INTO TAGS(ENTITYID, TAG, SCORE) VALUES (?, ?, ?)", (entity_id, key, current_keywords_dict[key]))
-
-
-	entity_objects = []
-	for entity_name in entity_dict.keys():
-		c.execute("SELECT ENTITYID FROM ENTITIES WHERE NAME=?", (entity_name,))
-		result = c.fetchall()
-		assert(len(result) == 1)
-		entity_objects.append(result[0])
-	for mentioned in sum_key_loc[3]:
-		assert(not (mentioned == entity_name))
-		if mentioned < entity_name:
-			c.execute("SELECT * FROM MENTIONEDWITH WHERE ENTITYID1=?", (entity_id,))
-		else:
-			c.execute("SELECT * FROM MENTIONEDWITH WHERE ENTITYID2=?", (entity_id,))
-
+				if old_mention[0] in new_mention_ids:
+					new_mentions.append((old_mention[0], old_mention[1], old_mention[2] + 1))
+				else:
+					new_mentions.append(old_mention)
+		new_mentions = top_mentions(new_mentions, max_mentions)
+		write_new_mentions(c, new_mentions)
+		conn.commit()
+		names_ids_tags_mentions.append((entity_name, entity_id, tag_list, new_mentions))
+	# entity_objects = []
+	# for entity_name in entity_dict.keys():
+	# 	c.execute("SELECT ENTITYID FROM ENTITIES WHERE NAME=?", (entity_name,))
+	# 	result = c.fetchall()
+	# 	assert(len(result) == 1)
 	conn.commit()
 	conn.close()
-	return ids
+	return names_ids_tags_mentions
 
 
 def dbquery(query):

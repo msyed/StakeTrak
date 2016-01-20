@@ -43,18 +43,18 @@ def get_entity_names(text, stoplist):
 
 
 # get sentences in which the person appears
-def sentextract(text, entity):
+def sentextract(text, entity, max_value):
     entity = entity.lower()
     sentences = sent_tokenize(text)
-    tensent = []
+    n_sent = []
     count = 0
     for sent in sentences:
-        if count > 9:
+        if count > (max_value - 1):
             break
         if entity in sent.lower():
-            tensent.append(sent)
+            n_sent.append(sent)
             count += 1
-    return tensent
+    return n_sent
 
 
 
