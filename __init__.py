@@ -1,5 +1,5 @@
 #to delete files
-import os, shutil
+import os, shutil, sqlite3
 
 from copy import copy
 
@@ -14,7 +14,7 @@ from wikigrabber import gatherer as gr
 
 from articles import getArticles
 
-from dbfunc import dbcustomdata, dbinsert, dbquery, trymakeusertable
+from dbfunc import dbcustomdata, dbinsert, dbquery, trymakeusertable, delete_entity_by_id, get_entity_name_by_id
 
 from summarizer import FrequencySummarizer 
 
@@ -239,10 +239,18 @@ def thirdpage():
 @app.route("/clean", methods=['POST'])
 def clean():
 	to_clean_id = request.args.get('id', '')
+	print to_clean_id
 	if request.method == 'POST':
-		
-
-
+		conn = sqlite3.connect("ASG.db")
+		c = conn.cursor()
+		entity = get_entity_name_by_id(c, to_clean_id)
+		entity = entity.encode('utf-8')
+		#print entity
+		with open("entity_stoplist.txt", "a") as f:
+			f.write("{}\n".format(entity))
+		delete_entity_by_id(c, to_clean_id)
+		conn.commit()
+		conn.close()
 	return "200 - OK!"
 		
 

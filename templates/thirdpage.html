@@ -125,15 +125,13 @@
 </body>
 
 <script>
-  $(document).ready(function(){
-    $('.name').on('click', function(){
-      console.log(this);
-      var result = confirm("would you like to delete this entity: " + this.innerHTML + "?");
-      if (result) {
-        $.post("/clean?id=" + this.getAttribute('data-internalid'));
-        this.remove()
-      }
-    });
+  $('.name').on('click', function(){
+    console.log(this);
+    var result = confirm("would you like to delete this entity:" + this.innerHTML + "?");
+    if (result) {
+      $.post("/clean?id=" + this.getAttribute('data-internalid'));
+      this.remove()
+    }
   });
 </script>
 
