@@ -14,11 +14,7 @@ from wikigrabber import gatherer as gr
 
 from articles import getArticles
 
-<<<<<<< HEAD
-from dbfunc import dbcustomdata, delete_entity_by_id, dbinsert, dbquery, trymakeusertable
-=======
 from dbfunc import dbcustomdata, dbinsert, dbquery, trymakeusertable, delete_entity_by_id, get_entity_name_by_id
->>>>>>> 73f2320febe63a9d3adb377ae7055a11895aeba8
 
 from summarizer import FrequencySummarizer 
 
@@ -229,7 +225,8 @@ def thirdpage():
 				entities_with_ids_tags_mentions = []
 				assert(len(names_ids_tags_mentions) == len(namedidentities.keys()))
 				for new_entity_values in names_ids_tags_mentions:
-					entities_with_ids_tags_mentions.append([new_entity_values[1], new_entity_values[0], namedidentities[new_entity_values[0]][0], namedidentities[new_entity_values[0]][2], new_entity_values[3]])
+					#                                            ID                       NAME                     SUMMARY                               KEYWORDS       LOCATIONS                                  RELATED_ENTITIES
+					entities_with_ids_tags_mentions.append([new_entity_values[1], new_entity_values[0], namedidentities[new_entity_values[0]][0], new_entity_values[2], namedidentities[new_entity_values[0]][2], new_entity_values[3]])
 				namedidentities = {}
 				total_entity_list = total_entity_list + entities_with_ids_tags_mentions
 

@@ -74,7 +74,7 @@
                 <p>
                   Keywords: 
                   {% for keyword in id_name_sum_key_loc[3] %}
-                    <a href="{{ url_for('thirdpage') }}?q={{ keyword[0] }}" style='color: #ffffff'>{% print keyword[0] %}</a>
+                    <a href="{{ url_for('thirdpage') }}?q={{ keyword[1] }}" style='color: #ffffff'>{% print keyword[1] %}</a>
                   {% endfor %}
                 </p>
 
