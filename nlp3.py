@@ -1,4 +1,4 @@
-import nltk
+from nltk import sent_tokenize, word_tokenize, pos_tag, ne_chunk_sents
 from extractText import extractText
 #with open('sample.txt', 'r') as f:
  #   sample = f.read().decode('utf-8')
@@ -18,10 +18,10 @@ def extract_entity_names(t):
 
 def get_entity_names(text, stoplist):
     entity_names = []
-    sentences = nltk.sent_tokenize(text)
-    tokenized_sentences = [nltk.word_tokenize(sentence) for sentence in sentences]
-    tagged_sentences = [nltk.pos_tag(sentence) for sentence in tokenized_sentences]
-    chunked_sentences = nltk.ne_chunk_sents(tagged_sentences, binary=True)
+    sentences = sent_tokenize(text)
+    tokenized_sentences = [word_tokenize(sentence) for sentence in sentences]
+    tagged_sentences = [pos_tag(sentence) for sentence in tokenized_sentences]
+    chunked_sentences = ne_chunk_sents(tagged_sentences, binary=True)
 
     for tree in chunked_sentences:
         # Print results per sentence
@@ -45,7 +45,7 @@ def get_entity_names(text, stoplist):
 # get sentences in which the person appears
 def sentextract(text, entity):
     entity = entity.lower()
-    sentences = nltk.sent_tokenize(text)
+    sentences = sent_tokenize(text)
     tensent = []
     count = 0
     for sent in sentences:
