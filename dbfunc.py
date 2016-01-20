@@ -14,13 +14,13 @@ def cursorlen(cursor):
 
 def get_entity_name_by_id(cursor, entity_id):
 	cursor.execute("SELECT NAME FROM ENTITIES WHERE ENTITYID=? ", (entity_id,))
-	name_result= c.fetchall()
+	name_result= cursor.fetchall()
 	assert(len(name_result) == 1)
 	return name_result[0][0]
 
 def get_entity_id_by_name(cursor, entity_name):
 	cursor.execute("SELECT ENTITYID FROM ENTITIES WHERE NAME=? ", (entity_name.replace("'", ""),))
-	id_result = c.fetchall()
+	id_result = cursor.fetchall()
 	assert(len(name_result) == 1)
 	return id_result[0][0]
 
