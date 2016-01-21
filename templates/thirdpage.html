@@ -98,7 +98,10 @@
                     {% print "Comments:" %}
                     <!--- name -->
                     <br>
-                    <input id="comments-{% print id_name_sum_key_loc[0] %}" value="{% print id_name_sum_key_loc[6] %}" type="text" style="color: #000000; width: 1000px; height: 100px" name="customdata">
+                    <p id="commentdisplay" class="commentbox">
+                      {% print id_name_sum_key_loc[6] %}
+                    </p>
+                    <input id="comments-{% print id_name_sum_key_loc[0] %}" class="commentbox"value="{% print id_name_sum_key_loc[6] %}" type="text" style="color: #000000; width: 1000px; height: 100px" name="customdata">
                     <input id="comments-submit-{% print id_name_sum_key_loc[0] %}" class="btn btn-warning comments-btn" value="Submit">
                   </form>
 
@@ -133,6 +136,7 @@
 
 <script>
 
+  /* named entity deletion */
   $('.name').on('click', function(){
     console.log(this);
     var result = confirm("would you like to delete this entity:" + this.innerHTML + "?");
@@ -145,6 +149,7 @@
     }
   });
 
+  /* comments box actions */
   $('.comments-btn').on('click', function() {
     console.log("comments click!");
     console.log(this)
@@ -163,6 +168,18 @@
       document.write(data.responseText);
     });
   });
+
+  /* toggle comment box display */
+  /* display only inputted elements if edit box is not selected */
+  $('.commentbox').on('mouseover', function(){
+    console.log(this);
+
+      });
+    }
+  });
+
+
+
 </script>
 
 </html>
