@@ -66,7 +66,7 @@ def delete_entity_by_id(cursor, num):
 # if name exists, return id.
 # if name doesnt exist, create new and return id.
 def insert_entity_by_name(cursor, entity_name):
-	cursor.execute("INSERT OR IGNORE INTO ENTITIES(NAME) VALUES (?)", (entity_name.lower(),))
+	cursor.execute("INSERT OR IGNORE INTO ENTITIES(NAME, CUSTOMDATA) VALUES (?, ?)", (entity_name.lower(), ""))
 	entity_id = cursor.lastrowid
 	# if user already exists:
 	if entity_id == 0:
@@ -266,8 +266,8 @@ def dbquery(query):
 			return 0
 		for final_id in unique_output_ids:
 			# Get name:
-			c.execute("SELECT NAME FROM ENTITIES WHERE ENTITYID=?", final_id)
-			name = c.fetchall()[0][0]
+			c.execute("SELECT NAME, CUSTOMDATA FROM ENTITIES WHERE ENTITYID=?", final_id)
+			name, custom_data = c.fetchall()[0]
 			c.execute("SELECT SENTENCE FROM SUMMARIES WHERE ENTITYID=?", final_id)
 
 			summary_chars = [i[0] for i in c.fetchall()]
@@ -281,11 +281,11 @@ def dbquery(query):
 			c.execute("SELECT LOCATION FROM LOCATIONS WHERE ENTITYID=?", final_id)
 			location_list = [i[0] for i in c.fetchall()]
 
-			entity_result.append([final_id[0], name, summary_list, tag_list, location_list])
+			entity_result.append([final_id[0], name, summary_list, tag_list, location_list, [], custom_data])
 
 	#conn.commit()
 	conn.close()
-	# [[72, 'NAME', ['summary'], [('key', 6.9)], ['location.txt'], ['related_1', 'related_2'], ...]
+	# [[72, 'NAME', ['summary'], [('key', 6.9)], ['location.txt'], ['related_1', 'related_2'], "CustomDataString"], ...]
 	print "ENTITY_RESULT"
 	print entity_result
 	return entity_result
