@@ -232,8 +232,6 @@ def thirdpage():
 
 			# entities_with_id:
 			# [[72, 'NAME', ['summary'], [('key', 6.9)], ['location.txt'], ['related_1', 'related_2'], ...]
-			print "TOTAL_ENTITY_LIST[0]"
-			print total_entity_list[0]
 			return render_template('thirdpage.html', wiki=total_entity_list, filenames1=filenames)
 		
 	#prevent GET requests for third page

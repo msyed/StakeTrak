@@ -52,7 +52,7 @@
 
         <!-- iterate through each named person and print relevant details-->
         {% for id_name_sum_key_loc in wiki: %}
-          <div class="entity">
+          <div id="entity-{% print id_name_sum_key_loc[0] %}" class="entity">
             <div class="intro-text">
               <br>
 
@@ -129,8 +129,11 @@
     console.log(this);
     var result = confirm("would you like to delete this entity:" + this.innerHTML + "?");
     if (result) {
+      console.log(this);
       $.post("/clean?id=" + this.getAttribute('data-internalid'));
-      this.remove()
+      $('#entity-' + this.getAttribute('data-internalid')).fadeOut(300, function() {
+        $(this).remove();
+      });
     }
   });
 </script>

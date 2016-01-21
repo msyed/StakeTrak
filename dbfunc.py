@@ -50,12 +50,6 @@ def get_entity_name_by_id(cursor, entity_id):
 def get_entity_id_by_name(cursor, entity_name):
 	cursor.execute("SELECT ENTITYID FROM ENTITIES WHERE NAME=? ", (entity_name.replace("'", "").lower(),))
 	id_result = cursor.fetchall()
-	print "ID RESULT:"
-	print id_result
-	print "ENTITY NAME:"
-	print entity_name
-	print "SQL ARG:"
-	print entity_name.replace("'", "").lower()
 	assert(len(id_result) == 1)
 	return id_result[0][0]
 
@@ -78,13 +72,7 @@ def insert_entity_by_name(cursor, entity_name):
 	if entity_id == 0:
 		cursor.execute("SELECT ENTITYID FROM ENTITIES WHERE NAME=?", (entity_name.lower(),))
 		res = cursor.fetchall()
-		print "SELECTED ID:"
-		print res
 		return res[0][0]
-	print "INSERTED:"
-	print entity_name
-	print "WITH ID:"
-	print entity_id
 	return entity_id
 
 # returns old top tags and deletes them from the database
@@ -130,6 +118,36 @@ def insert_mentions_by_ids(cursor, id1, id2):
 def write_new_mentions(cursor, mentions_list):
 	cursor.executemany("INSERT INTO MENTIONEDWITH VALUES (?, ?, ?)", mentions_list)
 
+def get_ids_from_query(cursor, q):
+	try:
+		cursor.execute("SELECT ENTITYID FROM TAGS WHERE TAG LIKE '%" + q + "%' LIMIT 100")
+	except sqlite3.OperationalError:
+		# there's no tables made yet.
+		return 0
+	tag_result = cursor.fetchall()
+	tag_entities = []
+	for tag_id in tag_result:
+		cursor.execute("SELECT * FROM LOCATIONS WHERE ENTITYID=?", tag_id)
+		tag_entities.append(cursor.fetchall())
+
+	# Return search results by order: NAME, SUMMARY, TAG
+	cursor.execute("SELECT ENTITYID FROM ENTITIES WHERE NAME LIKE '%" + q + "%' LIMIT 5")
+	name_result = cursor.fetchall()
+	cursor.execute("SELECT ENTITYID FROM TAGS WHERE TAG LIKE '%" + q + "%' LIMIT 5")
+	tag_result = cursor.fetchall()
+	cursor.execute("SELECT ENTITYID FROM SUMMARIES WHERE SENTENCE LIKE '%" + q + "%' LIMIT 5")
+	summary_result = cursor.fetchall()
+	cursor.execute("SELECT ENTITYID FROM LOCATIONS WHERE LOCATION LIKE '%" + q + "%' LIMIT 5")
+	filename_result = cursor.fetchall()
+
+	entity_result = []
+	counter = 0
+	unique_output_ids = []
+	for item in name_result + tag_result + summary_result + filename_result:
+		if item not in unique_output_ids:
+			unique_output_ids.append(item)
+	return unique_output_ids
+
 def dbcustomdata(entity_id, custom_data):
 	#print "CUSTOM_DATA:"
 	#print custom_data
@@ -170,8 +188,6 @@ def dbinsert(entity_dict, max_tags, max_mentions):
 	for entity_name in entity_dict.keys():
 		#0 index = summaries, 1st index = keys, 2nd index = links
 		sum_key_loc = entity_dict[entity_name]
-		#print "ENTITY NAME"
-		#print entity_name
 		name_no_apostrophes = entity_name.replace("'", "")
 		summary_no_apostrophes = [i.replace("'", "") for i in sum_key_loc[0]]
 		entity_id = insert_entity_by_name(c, entity_name)
@@ -179,8 +195,6 @@ def dbinsert(entity_dict, max_tags, max_mentions):
 		conn.commit()
 	for entity_id in ids:
 		entity_name = get_entity_name_by_id(c, entity_id)
-		print "entitiy_id: ", entity_id
-		print "sum_key_loc[2]: ", sum_key_loc[2]
 		for location in sum_key_loc[2]:
 			c.execute("SELECT EXISTS(SELECT LOCATION FROM LOCATIONS WHERE ENTITYID=(?))", (entity_id,))
 			if not c.fetchone()[0]:
@@ -237,10 +251,7 @@ def dbinsert(entity_dict, max_tags, max_mentions):
 
 
 def dbquery(query):
-	q = urllib.unquote(query).encode('utf8') 
-	#print "QUERY:"
-	#print query
-	#print type(query)
+	q = urllib.unquote(query).encode('utf8')
 	conn = sqlite3.connect("ASG.db")
 	wordlist = set(q.split(" "))
 	entity_result = []
@@ -249,43 +260,14 @@ def dbquery(query):
 		# If we can get Fulltext extension: http://dev.mysql.com/doc/refman/5.0/en/fulltext-natural-language.html
 		
 		#c.execute(''' SELECT a.* from (SELECT *, 1 as rank FROM ENTITIES WHERE NAME LIKE '%:q%' UNION SELECT *, 2 as rank FROM ENTITIES WHERE TAGS LIKE '%:q%') a order by a.rank asc;''', {"q": query})
-		try:
-			c.execute("SELECT ENTITYID FROM TAGS WHERE TAG LIKE '%" + q + "%' LIMIT 100")
-		except sqlite3.OperationalError:
-			# there's no tables made yet.
+
+		unique_output_ids = get_ids_from_query(c, query)
+		if not unique_output_ids:
 			return 0
-		tag_result = c.fetchall()
-		tag_entities = []
-		for tag_id in tag_result:
-			c.execute("SELECT * FROM LOCATIONS WHERE ENTITYID=?", tag_id)
-			tag_entities.append(c.fetchall())
-
-		# Return search results by order: NAME, SUMMARY, TAG
-		c.execute("SELECT ENTITYID FROM ENTITIES WHERE NAME LIKE '%" + q + "%' LIMIT 5")
-		name_result = c.fetchall()
-		print "NAME RESULT"
-		print name_result
-		c.execute("SELECT ENTITYID FROM TAGS WHERE TAG LIKE '%" + q + "%' LIMIT 5")
-		tag_result = c.fetchall()
-		c.execute("SELECT ENTITYID FROM SUMMARIES WHERE SENTENCE LIKE '%" + q + "%' LIMIT 5")
-		summary_result = c.fetchall()
-		c.execute("SELECT ENTITYID FROM LOCATIONS WHERE LOCATION LIKE '%" + q + "%' LIMIT 5")
-		filename_result = c.fetchall()
-
-		entity_result = []
-		counter = 0
-		unique_output_ids = []
-		for item in name_result + tag_result + summary_result + filename_result:
-			if item not in unique_output_ids:
-				unique_output_ids.append(item)
 		for final_id in unique_output_ids:
-			print "FINAL ID"
-			print final_id
 			# Get name:
 			c.execute("SELECT NAME FROM ENTITIES WHERE ENTITYID=?", final_id)
 			name = c.fetchall()[0][0]
-			#print "ID"
-			#print final_id
 			c.execute("SELECT SENTENCE FROM SUMMARIES WHERE ENTITYID=?", final_id)
 
 			summary_chars = [i[0] for i in c.fetchall()]
@@ -294,17 +276,16 @@ def dbquery(query):
 			for char in summary_chars:
 				total = total + char
 			summary_list = [total]
-			c.execute("SELECT TAG, SCORE FROM TAGS WHERE ENTITYID=?", final_id)
+			c.execute("SELECT * FROM TAGS WHERE ENTITYID=?", final_id)
 			tag_list = c.fetchall()
 			c.execute("SELECT LOCATION FROM LOCATIONS WHERE ENTITYID=?", final_id)
 			location_list = [i[0] for i in c.fetchall()]
 
 			entity_result.append([final_id[0], name, summary_list, tag_list, location_list])
-			counter = counter + 1
 
 	#conn.commit()
 	conn.close()
-	# [[72, 'name', ['summary1', 'summary2'], [('key', 2.4), ('words', 1.3)], ['location', 'location2']], ...]
+	# [[72, 'NAME', ['summary'], [('key', 6.9)], ['location.txt'], ['related_1', 'related_2'], ...]
 	print "ENTITY_RESULT"
 	print entity_result
 	return entity_result
