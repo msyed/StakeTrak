@@ -145,12 +145,11 @@ def uploader():
 	# if request.method == 'GET':
 	#   	return redirect(url_for('index'))
 
-@app.route('/customdata', methods=['POST', 'GET'])
+@app.route('/customdata', methods=['POST'])
 def customdata():
-	data = request.args.get('data', '')
 	## write data to db
-	dbcustomdata(1, data)
-	return redirect(url_for('index'))
+	dbcustomdata(request.form["id"], request.form["customdata"])
+	return "200 - OK!"
 
 #render third page
 @app.route('/thirdpage', methods=['GET', 'POST'])
@@ -225,8 +224,8 @@ def thirdpage():
 				entities_with_ids_tags_mentions = []
 				assert(len(names_ids_tags_mentions) == len(namedidentities.keys()))
 				for new_entity_values in names_ids_tags_mentions:
-					#                                            ID                       NAME                     SUMMARY                               KEYWORDS       LOCATIONS                                  RELATED_ENTITIES
-					entities_with_ids_tags_mentions.append([new_entity_values[1], new_entity_values[0], namedidentities[new_entity_values[0]][0], new_entity_values[2], namedidentities[new_entity_values[0]][2], new_entity_values[3]])
+					#                                            ID                       NAME                     SUMMARY                               KEYWORDS       LOCATIONS                                  RELATED_ENTITIES    CUSTOMDATA
+					entities_with_ids_tags_mentions.append([new_entity_values[1], new_entity_values[0], namedidentities[new_entity_values[0]][0], new_entity_values[2], namedidentities[new_entity_values[0]][2], new_entity_values[3], ""])
 				namedidentities = {}
 				total_entity_list = total_entity_list + entities_with_ids_tags_mentions
 

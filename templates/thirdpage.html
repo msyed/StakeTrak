@@ -94,12 +94,12 @@
                 
                 <!--- insert text box here -->  
                 <p>
-                  <form action="/customdata/" method="POST">
+                  <form>
                     {% print "Comments:" %}
                     <!--- name -->
                     <br>
-                    <input type="text" style="color: #000000; width: 1000px; height: 100px" name="customdata">
-                    <input type="submit" value="Submit">
+                    <input id="comments-{% print id_name_sum_key_loc[0] %}" value="{% print id_name_sum_key_loc[6] %}" type="text" style="color: #000000; width: 1000px; height: 100px" name="customdata">
+                    <input id="comments-submit-{% print id_name_sum_key_loc[0] %}" class="btn btn-warning comments-btn" value="Submit">
                   </form>
 
                 <br> 
@@ -143,6 +143,25 @@
         $(this).remove();
       });
     }
+  });
+
+  $('.comments-btn').on('click', function() {
+    console.log("comments click!");
+    console.log(this)
+    var elementIdList = this.id.split('-');
+    var entityId = elementIdList[elementIdList.length - 1];
+    var text = $('#comments-' + entityId).val();
+    console.log("text:");
+    console.log(text);
+    var jqxhr = $.post("/customdata", {'id': entityId, 'customdata': text}).done(function(data, status, errorthrown) {
+      // update frontend
+      //document.write(data);
+      console.log("success!")
+    }).fail(function(data, status, errorthrown) {
+      //alert( "error: " + status + " problem: " + errorthrown );
+      console.log("failure!")
+      document.write(data.responseText);
+    });
   });
 </script>
 
