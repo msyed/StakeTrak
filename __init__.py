@@ -57,7 +57,8 @@ def allowed_file(filename):
 #render login
 @app.route('/', methods=['GET'])
 def home():
-	return render_template('home.html', cwd=(os.getcwd()))
+	return render_template('new-home.html')
+	#return render_template('home.html', cwd=(os.getcwd()))
 
 #render login
 @app.route('/app', methods=['GET', 'POST'])
@@ -231,6 +232,8 @@ def thirdpage():
 
 			# entities_with_id:
 			# [[72, 'NAME', ['summary'], [('key', 6.9)], ['location.txt'], ['related_1', 'related_2'], ...]
+			print "TOTAL_ENTITY_LIST"
+			print total_entity_list
 			return render_template('thirdpage.html', wiki=total_entity_list, filenames1=filenames)
 		
 	#prevent GET requests for third page

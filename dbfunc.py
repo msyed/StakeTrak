@@ -174,7 +174,8 @@ def trymakeusertable():
 def dbinsert(entity_dict, max_tags, max_mentions):
 	# hpdict
 	# {'Name': [['summary'], [('key', 2.4), ('words', 1.3)], ['location'], [other1, other2]]}
-
+	print "ENTITY_DICT TO INSERT:"
+	print entity_dict
 	conn = sqlite3.connect("ASG.db")
 	c = conn.cursor()
 
@@ -224,21 +225,33 @@ def dbinsert(entity_dict, max_tags, max_mentions):
 			conn.commit()
 			new_mention_ids.append(mentioned_id)
 		new_mentions = []
+		print "OLD MENTIONS"
+		print old_mentions
+
 		for old_mention in old_mentions:
 			if old_mention[0] == entity_id:
 				if old_mention[1] in new_mention_ids:
 					new_mentions.append((old_mention[0], old_mention[1], old_mention[2] + 1))
-				else:
-					new_mentions.append(old_mention)
+					new_mention_ids.remove(old_mention[1])
 			# old_mention[1] == entity_id
 			else:
 				if old_mention[0] in new_mention_ids:
 					new_mentions.append((old_mention[0], old_mention[1], old_mention[2] + 1))
-				else:
-					new_mentions.append(old_mention)
+					new_mention_ids.remove(old_mention[0])
+		for new_id in new_mention_ids:
+			assert(new_id != entity_id)
+			if new_id < entity_id:
+				new_mentions.append((new_id, entity_id, 1))
+			else:
+				new_mentions.append((entity_id, new_id, 1))
+		print "NEW MENTIONS BEFORE"
+		print new_mentions
+		print max_mentions
 		new_mentions = top_mentions(new_mentions, max_mentions)
 		write_new_mentions(c, new_mentions)
 		conn.commit()
+		print "NEW MENTIONS"
+		print new_mentions
 		names_ids_tags_mentions.append((entity_name, entity_id, tag_list, new_mentions))
 	# entity_objects = []
 	# for entity_name in entity_dict.keys():

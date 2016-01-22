@@ -59,14 +59,11 @@
               <br>
 
               <!-- provide name of person-->                             
-              <span data-internalid="{% print id_name_sum_key_loc[0] %}" class="name"> 
-                {% print id_name_sum_key_loc[1] %} 
-                <!--  hover box-->
-                <p class="makerelative">
-                  <div id="popup">CLICK NAME TO DELETE</div>
-                </p>
-              </span> 
-
+              <span data-internalid="{% print id_name_sum_key_loc[0] %}" class="name">{% print id_name_sum_key_loc[1] %}</span> 
+              <!--  hover box-->
+              <p class="makerelative">
+                <div id="popup">CLICK NAME TO DELETE</div>
+              </p>
               <hr class="star-light"> 
               <div class="row">
 
@@ -150,7 +147,7 @@
   /* named entity deletion */
   $('.name').on('click', function(){
     console.log(this);
-    var result = confirm("would you like to delete this entity:" + this.innerHTML + "?");
+    var result = confirm("would you like to delete this entity: " + this.innerHTML + "?");
     if (result) {
       console.log(this);
       $.post("/clean?id=" + this.getAttribute('data-internalid'));
@@ -182,15 +179,9 @@
 
   /* toggle comment box display */
   /* display only inputted elements if edit box is not selected */
-  $('.commentbox').on('mouseover', function(){
-    console.log(this);
-
-      });
-    }
+  $('.commentbox').on('mouseover', function() {
+      console.log(this);
   });
-
-
-
 </script>
 
 </html>
