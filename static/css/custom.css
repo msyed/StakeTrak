@@ -5,6 +5,32 @@ body {
     
 }
 
+/*
+.makerelative {
+    position: relative;
+}
+*/
+.name #popup {
+    display: none;
+}
+
+.name:hover {
+    cursor: pointer;
+}
+
+.name:hover #popup {
+    display: block;
+    color: red;
+    /*
+    
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    */
+    font-size: 14px;
+}
+
+
 .cf:before, .cf:after{
     content:""; 
     display:table; 
