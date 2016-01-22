@@ -12,6 +12,8 @@
 
   <title>The People</title>
 
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='')}}img/favicon.ico">
+
   <!-- Bootstrap Core CSS - Uses Bootswatch Flatly Theme: http://bootswatch.com/flatly/ -->
   <link href="{{ url_for('static', filename='') }}css/bootstrap.min.css" rel="stylesheet">
 
@@ -74,9 +76,18 @@
                 <p>
                   Keywords: 
                   {% for keyword in id_name_sum_key_loc[3] %}
-                    <a href="{{ url_for('thirdpage') }}?q={{ keyword[1] }}" style='color: #ffffff'>{% print keyword[1] %}</a>
+                    <a href="{{ url_for('thirdpage') }}?q={{ keyword[1] }}" style='color: #ffffff'>{% print keyword[1] %},</a>
                   {% endfor %}
                 </p>
+
+                {% if not id_name_sum_key_loc[5] %}
+                  No Related People.
+                {% else %}
+                Related People:
+                  {% for associate in id_name_sum_key_loc[5] %}
+                    <a href="{{ url_for('thirdpage') }}?q={{ associate }}" style='color: #ffffff'>{% print associate %}, </a>
+                  {% endfor %}
+                {% endif %}
 
                 <p> 
                 {% for location in id_name_sum_key_loc[4] %}
