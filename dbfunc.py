@@ -93,6 +93,18 @@ def get_delete_mentions_by_id(cursor, entity_id):
 	cursor.execute("DELETE FROM MENTIONEDWITH WHERE ENTITYID1=? OR ENTITYID2=?", (entity_id, entity_id))
 	return current_mentions
 
+def get_entities_mentioned_by_id(cursor, entity_id):
+	cursor.execute("SELECT * FROM MENTIONEDWITH WHERE ENTITYID1=? OR ENTITYID2=? ORDER BY COUNT DESC", (str(entity_id[0]), str(entity_id[0])))
+	current_mentions = cursor.fetchall()
+	names = []
+	for mention in current_mentions:
+		if mention[0] == entity_id:
+			names.append(get_entity_name_by_id(cursor, mention[1]))
+		# if mention[1] == entity_id
+		else:
+			names.append(get_entity_name_by_id(cursor, mention[0]))
+	return names
+
 def top_mentions(all_mentions, max_mentions):
 	return sorted(all_mentions , key=(lambda s: -s[2]))[:max_mentions]
 
@@ -296,8 +308,12 @@ def dbquery(query):
 			tag_list = c.fetchall()
 			c.execute("SELECT LOCATION FROM LOCATIONS WHERE ENTITYID=?", final_id)
 			location_list = [i[0] for i in c.fetchall()]
-
-			entity_result.append([final_id[0], name, summary_list, tag_list, location_list, [], custom_data])
+			print "final_id:"
+			print final_id
+			names = get_entities_mentioned_by_id(c, final_id)
+			print "names"
+			print names
+			entity_result.append([final_id[0], name, summary_list, tag_list, location_list, names, custom_data])
 
 	#conn.commit()
 	conn.close()
