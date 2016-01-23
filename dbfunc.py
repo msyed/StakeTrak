@@ -238,8 +238,11 @@ def dbinsert(entity_dict, max_tags, max_mentions):
 				if old_mention[0] in new_mention_ids:
 					new_mentions.append((old_mention[0], old_mention[1], old_mention[2] + 1))
 					new_mention_ids.remove(old_mention[0])
+		mention_names = []
 		for new_id in new_mention_ids:
-			assert(new_id != entity_id)
+			# In the future, this should not be commented out
+			# assert(new_id != entity_id)
+			mention_names.append(get_entity_name_by_id(c, new_id))
 			if new_id < entity_id:
 				new_mentions.append((new_id, entity_id, 1))
 			else:
@@ -252,7 +255,7 @@ def dbinsert(entity_dict, max_tags, max_mentions):
 		conn.commit()
 		print "NEW MENTIONS"
 		print new_mentions
-		names_ids_tags_mentions.append((entity_name, entity_id, tag_list, new_mentions))
+		names_ids_tags_mentions.append((entity_name, entity_id, tag_list, mention_names))
 	# entity_objects = []
 	# for entity_name in entity_dict.keys():
 	# 	c.execute("SELECT ENTITYID FROM ENTITIES WHERE NAME=?", (entity_name,))
