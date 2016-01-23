@@ -3333,8 +3333,10 @@ section * {
   color: #bdc3c7;
   position: relative;
 }
+/* Edited by Sammy */
 .header-11-sub h3 {
-  font-size: 33px;
+  /*font-size: 33px;*/
+  font-size: 37;
   font-weight: normal;
   color: #2c3e50;
   margin-bottom: 15px;
