@@ -109,7 +109,8 @@
                     <p id="commentdisplay" class="commentbox">
                       {% print id_name_sum_key_loc[6] %}
                     </p>
-                    <input id="comments-{% print id_name_sum_key_loc[0] %}" class="commentbox"value="{% print id_name_sum_key_loc[6] %}" type="text" style="color: #000000; width: 1000px; height: 100px" name="customdata">
+                    <textarea rows="3" cols="50" id="comments-{% print id_name_sum_key_loc[0] %}" class="commentbox"value="{% print id_name_sum_key_loc[6] %}" type="text" style="color: #000000; width: 1000px; height: 100px" name="customdata"></textarea>
+                    <br><br>
                     <input id="comments-submit-{% print id_name_sum_key_loc[0] %}" class="btn btn-warning comments-btn" value="Submit">
                   </form>
 

@@ -14,23 +14,25 @@
 
 /* Logo */
 
-.header-basic-light .header-limiter h1{
+.header-basic-light .header-limiter img {
 	float: left;
-	font: normal 28px Cookie, Arial, Helvetica, sans-serif;
-	line-height: 40px;
+/*	font: normal 28px Cookie, Arial, Helvetica, sans-serif;
+*/	line-height: 40px;
 	margin: 0;
+	width: 240px;
+	/*height: 53px;*/
 }
 
-.header-basic-light .header-limiter h1 span {
+/*.header-basic-light .header-limiter h1 span {
 	color: #5383d3;
-}
+}*/
 
 /* The header links */
 
-.header-basic-light .header-limiter a {
+/*.header-basic-light .header-limiter a {
 	color: #5c616a;
 	text-decoration: none;
-}
+}*/
 
 .header-basic-light .header-limiter nav{
 	font:15px Arial, Helvetica, sans-serif;
