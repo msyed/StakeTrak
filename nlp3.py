@@ -16,7 +16,7 @@ def extract_entity_names(t):
     return entity_names
 
 
-def get_entity_names(text, stoplist):
+def get_entity_names(text, customstoplist):
     entity_names = []
     sentences = sent_tokenize(text)
     tokenized_sentences = [word_tokenize(sentence) for sentence in sentences]
@@ -35,9 +35,12 @@ def get_entity_names(text, stoplist):
     #return set(entity_names)
 
     # clean entity names
+    stopwords = []
     with open(stoplist, 'r') as f:
-        stopwords = set(f.read().lower().split('\n'))
-    newentitylist = [word for word in set(entity_names) if word.lower() not in stopwords]
+        stopwords = f.read().lower().split('\n')
+    with open(customstoplist, 'r') as f:
+        stopwords = stopwords + f.read().lower().split('\n')
+    newentitylist = [word for word in set(entity_names) if word.lower() not in set(stopwords)]
     #newentitylist = set(entity_names) - set(stopwords)
     return newentitylist
 

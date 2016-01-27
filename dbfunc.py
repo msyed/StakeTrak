@@ -34,8 +34,9 @@ def create_tables(cursor):
 	cursor.execute('''CREATE TABLE MENTIONEDWITH
 	       (ENTITYID1 INTEGER NOT NULL,
 	       ENTITYID2 INTEGER NOT NULL,
-	       COUNT INTEGER NOT NULL,
-	       UNIQUE(ENTITYID1, ENTITYID2))''')
+	       COUNT INTEGER NOT NULL)''')
+		   # eventually, change to this:
+		   #COUNT INTEGER NOT NULL, UNIQUE(ENTITYID1, ENTITYID2))''')
 	
 	cursor.execute('''CREATE TABLE LOCATIONS
 	       (ENTITYID INTEGER  NOT NULL,
@@ -160,18 +161,18 @@ def get_ids_from_query(cursor, q):
 			unique_output_ids.append(item)
 	return unique_output_ids
 
-def dbcustomdata(entity_id, custom_data):
+def dbcustomdata(entity_id, custom_data, dbpath):
 	#print "CUSTOM_DATA:"
 	#print custom_data
-	conn = sqlite3.connect("ASG.db")
+	conn = sqlite3.connect(dbpath)
 	c = conn.cursor()
 	c.execute("UPDATE ENTITIES SET CUSTOMDATA = (?) WHERE ENTITYID= (?)", (custom_data, entity_id))
 	conn.commit()
 	conn.close()
 	return 0
 
-def trymakeusertable():
-	conn = sqlite3.connect("ASG.db")
+def trymakeusertable(dbpath):
+	conn = sqlite3.connect(dbpath)
 	c = conn.cursor()
 	val = c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='USERS'")
 	if cursorlen(val.fetchall()):
@@ -183,12 +184,12 @@ def trymakeusertable():
 	return
 
 
-def dbinsert(entity_dict, max_tags, max_mentions):
+def dbinsert(entity_dict, max_tags, max_mentions, dbpath):
 	# hpdict
 	# {'Name': [['summary'], [('key', 2.4), ('words', 1.3)], ['location'], [other1, other2]]}
 	print "ENTITY_DICT TO INSERT:"
 	print entity_dict
-	conn = sqlite3.connect("ASG.db")
+	conn = sqlite3.connect(dbpath)
 	c = conn.cursor()
 
 	val = c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='ENTITIES'")
@@ -278,9 +279,9 @@ def dbinsert(entity_dict, max_tags, max_mentions):
 	return names_ids_tags_mentions
 
 
-def dbquery(query):
+def dbquery(query, dbpath):
 	q = urllib.unquote(query).encode('utf8')
-	conn = sqlite3.connect("ASG.db")
+	conn = sqlite3.connect(dbpath)
 	wordlist = set(q.split(" "))
 	entity_result = []
 	with conn:

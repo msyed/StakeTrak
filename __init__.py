@@ -39,6 +39,8 @@ MAX_SENT_PER_ENTITY = 10
 MAX_TAGS_PER_ENTITY = 20
 MAX_MENTIONS_PER_ENTITY = 20
 
+LOGINS = {"users": None, "staketrak": "rollthrough42", "ASG_BLUE": "Albright_Stonebridge"}
+
 #create a flask instance 
 app = Flask(__name__)
 
@@ -64,9 +66,8 @@ def home():
 @app.route('/app', methods=['GET', 'POST'])
 def login():
 
-	trymakeusertable()
-
 	if 'username' in session:
+		trymakeusertable("db/" + session['username'] + ".db")
 		return redirect(url_for('index'))
 
 	if request.method == 'GET':
@@ -77,7 +78,8 @@ def login():
 			# login failed - incomplete form
 			return render_template('login.html', error=1)
 		
-		if request.form['username'] == 'admin' and request.form['password'] == 'admin':
+		if request.form['username'] in LOGINS.keys():
+			if request.form['password'] == LOGINS[request.form['username']]:
 				session['username'] = request.form['username']
 				return redirect(url_for('index'))
 		else:
@@ -184,7 +186,7 @@ def thirdpage():
 				#newsummary = ""
 				#for i in summary:
 				#	newsummary += i
-				entities = nlp3.get_entity_names(text, "entity_stoplist.txt")
+				entities = nlp3.get_entity_names(text, "stopwords/" + session['username'] + ".txt")
 				print entities
 				entitiescopy = copy(entities)
 				#location = info.replace("test_files/","")
@@ -220,7 +222,7 @@ def thirdpage():
 
 				# pass named entities to template
 				# print namedidentities.values()
-				names_ids_tags_mentions = dbinsert(namedidentities, MAX_TAGS_PER_ENTITY, MAX_MENTIONS_PER_ENTITY)
+				names_ids_tags_mentions = dbinsert(namedidentities, MAX_TAGS_PER_ENTITY, MAX_MENTIONS_PER_ENTITY, "db/" + session['username'] + ".db")
 
 				entities_with_ids_tags_mentions = []
 				assert(len(names_ids_tags_mentions) == len(namedidentities.keys()))
@@ -241,7 +243,7 @@ def thirdpage():
 		# if theres a query, return results
 		searchword = request.args.get('q', '')
 		if searchword:
-			namedidentities = dbquery(searchword)
+			namedidentities = dbquery(searchword, "db/" + session['username'] + ".db")
 			if namedidentities:
 				return render_template('thirdpage.html', wiki=namedidentities)
 			else:
@@ -250,15 +252,17 @@ def thirdpage():
 
 @app.route("/clean", methods=['POST'])
 def clean():
+	if not 'username' in session:
+		return abort(404)
 	to_clean_id = request.args.get('id', '')
 	print to_clean_id
 	if request.method == 'POST':
-		conn = sqlite3.connect("ASG.db")
+		conn = sqlite3.connect("db/" + session['username'] + ".db")
 		c = conn.cursor()
 		entity = get_entity_name_by_id(c, to_clean_id)
 		entity = entity.encode('utf-8')
 		#print entity
-		with open("entity_stoplist.txt", "a") as f:
+		with open("stopwords/" + session['username'] + ".txt", "a") as f:
 			f.write("{}\n".format(entity))
 		delete_entity_by_id(c, to_clean_id)
 		conn.commit()
