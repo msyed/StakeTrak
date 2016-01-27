@@ -158,7 +158,6 @@ def customdata():
 @app.route('/thirdpage', methods=['GET', 'POST'])
 def thirdpage():
 	if not ((request.args.get('apikey', '') == "rollthru") or ('username' in session)):
-		print (not 'username' in session)
 		return abort(404)
 	#render error screen if user does not upload files
 	if request.method == 'POST':
@@ -187,7 +186,6 @@ def thirdpage():
 				#for i in summary:
 				#	newsummary += i
 				entities = nlp3.get_entity_names(text, "stopwords/" + session['username'] + ".txt")
-				print entities
 				entitiescopy = copy(entities)
 				#location = info.replace("test_files/","")
 			 	keywordobj = rake.Rake("RAKE/SmartStoplist.txt")
@@ -234,8 +232,6 @@ def thirdpage():
 
 			# entities_with_id:
 			# [[72, 'NAME', ['summary'], [('key', 6.9)], ['location.txt'], ['related_1', 'related_2'], ...]
-			print "TOTAL_ENTITY_LIST"
-			print total_entity_list
 			return render_template('thirdpage.html', wiki=total_entity_list, filenames1=filenames)
 		
 	#prevent GET requests for third page
@@ -255,7 +251,6 @@ def clean():
 	if not 'username' in session:
 		return abort(404)
 	to_clean_id = request.args.get('id', '')
-	print to_clean_id
 	if request.method == 'POST':
 		conn = sqlite3.connect("db/" + session['username'] + ".db")
 		c = conn.cursor()

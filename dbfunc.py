@@ -187,8 +187,6 @@ def trymakeusertable(dbpath):
 def dbinsert(entity_dict, max_tags, max_mentions, dbpath):
 	# hpdict
 	# {'Name': [['summary'], [('key', 2.4), ('words', 1.3)], ['location'], [other1, other2]]}
-	print "ENTITY_DICT TO INSERT:"
-	print entity_dict
 	conn = sqlite3.connect(dbpath)
 	c = conn.cursor()
 
@@ -238,8 +236,6 @@ def dbinsert(entity_dict, max_tags, max_mentions, dbpath):
 			conn.commit()
 			new_mention_ids.append(mentioned_id)
 		new_mentions = []
-		print "OLD MENTIONS"
-		print old_mentions
 
 		for old_mention in old_mentions:
 			if old_mention[0] == entity_id:
@@ -260,14 +256,9 @@ def dbinsert(entity_dict, max_tags, max_mentions, dbpath):
 				new_mentions.append((new_id, entity_id, 1))
 			else:
 				new_mentions.append((entity_id, new_id, 1))
-		print "NEW MENTIONS BEFORE"
-		print new_mentions
-		print max_mentions
 		new_mentions = top_mentions(new_mentions, max_mentions)
 		write_new_mentions(c, new_mentions)
 		conn.commit()
-		print "NEW MENTIONS"
-		print new_mentions
 		names_ids_tags_mentions.append((entity_name, entity_id, tag_list, mention_names))
 	# entity_objects = []
 	# for entity_name in entity_dict.keys():
@@ -309,18 +300,12 @@ def dbquery(query, dbpath):
 			tag_list = c.fetchall()
 			c.execute("SELECT LOCATION FROM LOCATIONS WHERE ENTITYID=?", final_id)
 			location_list = [i[0] for i in c.fetchall()]
-			print "final_id:"
-			print final_id
 			names = get_entities_mentioned_by_id(c, final_id)
-			print "names"
-			print names
 			entity_result.append([final_id[0], name, summary_list, tag_list, location_list, names, custom_data])
 
 	#conn.commit()
 	conn.close()
 	# [[72, 'NAME', ['summary'], [('key', 6.9)], ['location.txt'], ['related_1', 'related_2'], "CustomDataString"], ...]
-	print "ENTITY_RESULT"
-	print entity_result
 	return entity_result
 
 
