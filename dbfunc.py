@@ -174,8 +174,8 @@ def dbcustomdata(entity_id, custom_data, dbpath):
 def trymakeusertable(dbpath):
 	conn = sqlite3.connect(dbpath)
 	c = conn.cursor()
-	val = c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='USERS'")
-	if cursorlen(val.fetchall()):
+	c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='USERS'")
+	if cursorlen(c.fetchall()):
 		return
 	c.execute('''CREATE TABLE USERS
        (USERID INTEGER PRIMARY KEY autoincrement,
