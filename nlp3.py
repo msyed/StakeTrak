@@ -36,7 +36,7 @@ def get_entity_names(text, customstoplist):
 
     # clean entity names
     stopwords = []
-    with open(stoplist, 'r') as f:
+    with open("entity_stoplist.txt", 'r') as f:
         stopwords = f.read().lower().split('\n')
     with open(customstoplist, 'r') as f:
         stopwords = stopwords + f.read().lower().split('\n')
