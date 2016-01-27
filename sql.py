@@ -1,15 +1,15 @@
-import sqlite3 as lite
-import sys
+# import sqlite3 as lite
+# import sys
 
 
-con = lite.connect('ASG.db')
+# con = lite.connect('ASG.db')
 
-with con:    
+# with con:    
     
-    cur = con.cursor()    
-    cur.execute("SELECT * FROM ENTITIES")
+#     cur = con.cursor()    
+#     cur.execute("SELECT * FROM ENTITIES")
 
-    rows = cur.fetchall()
+#     rows = cur.fetchall()
 
-    for row in rows:
-        print row
+#     for row in rows:
+#         print row
