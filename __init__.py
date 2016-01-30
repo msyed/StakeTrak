@@ -248,7 +248,7 @@ def thirdpage():
 				assert(len(names_ids_tags_mentions) == len(namedidentities.keys()))
 				for new_entity_values in names_ids_tags_mentions:
 					#                                            ID                       NAME                     SUMMARY                               KEYWORDS       LOCATIONS                                  RELATED_ENTITIES    CUSTOMDATA
-					entities_with_ids_tags_mentions.append([new_entity_values[1], new_entity_values[0], namedidentities[new_entity_values[0]][0], new_entity_values[2], namedidentities[new_entity_values[0]][2], new_entity_values[3], ""])
+					entities_with_ids_tags_mentions.append([new_entity_values[1], new_entity_values[0], namedidentities[new_entity_values[0]][0], new_entity_values[2], namedidentities[new_entity_values[0]][2], set(new_entity_values[3]), ""])
 				namedidentities = {}
 				total_entity_list = total_entity_list + entities_with_ids_tags_mentions
 
