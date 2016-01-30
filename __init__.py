@@ -150,9 +150,10 @@ def uploader():
 
 @app.route('/customdata', methods=['POST'])
 def customdata():
-	## write data to db
-	dbcustomdata(request.form["id"], request.form["customdata"])
-	return "200 - OK!"
+	if 'username' in session:
+		## write data to db
+		dbcustomdata(request.form["id"], request.form["customdata"], "db/" + session['username'] + ".db")
+		return "200 - OK!"
 
 #render third page
 @app.route('/thirdpage', methods=['GET', 'POST'])
