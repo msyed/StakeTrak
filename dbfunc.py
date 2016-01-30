@@ -4,6 +4,11 @@ from heapq import nlargest
 
 import urllib
 
+def errlog(string):
+	with open('customlog.txt', 'w') as f:
+		f.write(string)
+	f.close()
+
 # returns 0 if empty query, 1 if query returned stuff
 def cursorlen(cursor):
 	for item in cursor:
@@ -172,6 +177,9 @@ def dbcustomdata(entity_id, custom_data, dbpath):
 	return 0
 
 def trymakeusertable(dbpath):
+	print "dbpath:"
+	print dbpath
+	errlog(dbpath)
 	conn = sqlite3.connect(dbpath)
 	c = conn.cursor()
 	c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='USERS'")

@@ -1,5 +1,8 @@
-from nltk import sent_tokenize, word_tokenize, pos_tag, ne_chunk_sents
+from nltk import sent_tokenize, word_tokenize, ne_chunk_sents, pos_tag_sents #, pos_tag
+#import nltk.data, nltk.tag
+#tagger = nltk.data.load(nltk.tag._POS_TAGGER)
 from extractText import extractText
+import time
 #with open('sample.txt', 'r') as f:
  #   sample = f.read().decode('utf-8')
 
@@ -17,11 +20,18 @@ def extract_entity_names(t):
 
 
 def get_entity_names(text, customstoplist):
+    t1 = time.time()
     entity_names = []
     sentences = sent_tokenize(text)
+    t2 = time.time()
     tokenized_sentences = [word_tokenize(sentence) for sentence in sentences]
-    tagged_sentences = [pos_tag(sentence) for sentence in tokenized_sentences]
+    t3 = time.time()
+    #tagged_sentences = [tagger.tag(sentence) for sentence in tokenized_sentences]
+    tagged_sentences = pos_tag_sents(tokenized_sentences)
+    #tagged_sentences = [pos_tag(sentence) for sentence in tokenized_sentences]
+    t4 = time.time()
     chunked_sentences = ne_chunk_sents(tagged_sentences, binary=True)
+    t5 = time.time()
 
     for tree in chunked_sentences:
         # Print results per sentence
@@ -29,6 +39,10 @@ def get_entity_names(text, customstoplist):
         
         entity_names.extend(extract_entity_names(tree))
 
+    t6 = time.time()
+    times = [(i - t1) for i in [t1, t2, t3, t4, t5, t6]]
+    print "times:"
+    print times
 # Print all entity names
 # print entity_names
 # return unique entity names
