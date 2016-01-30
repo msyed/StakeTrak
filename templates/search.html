@@ -80,7 +80,7 @@
                 <p>
                   Keywords: 
                   {% for keyword in id_name_sum_key_loc[3] %}
-                    <a href="{{ url_for('thirdpage') }}?q={{ keyword[1] }}" style='color: #ffffff'>{% print keyword[1] %},</a>
+                    <a href="{{ url_for('search') }}?q={{ keyword[1] }}" style='color: #ffffff'>{% print keyword[1] %},</a>
                   {% endfor %}
                 </p>
 
@@ -90,9 +90,9 @@
                 Related Entities:
                   {% for associate in id_name_sum_key_loc[5] %}
                     {% if id_name_sum_key_loc[5][-1] == associate %}
-                    <a href="{{ url_for('thirdpage') }}?q={{ associate }}" style='color: #ffffff'>{% print associate %}</a>
+                    <a href="{{ url_for('search') }}?q={{ associate }}" style='color: #ffffff'>{% print associate %}</a>
                     {% else %}
-                      <a href="{{ url_for('thirdpage') }}?q={{ associate }}" style='color: #ffffff'>{% print associate %}</a>
+                      <a href="{{ url_for('search') }}?q={{ associate }}" style='color: #ffffff'>{% print associate %}</a>
                       ,&nbsp;
                     {% endif %}
                   {% endfor %}
@@ -100,7 +100,7 @@
 
                 <p> 
                 {% for location in id_name_sum_key_loc[4] %}
-                  <p>Found in <a href="{{ url_for('thirdpage') }}?q={{ location }}" style='color: #ffffff'>{% print location %}</a></p>
+                  <p>Found in <a href="{{ url_for('search') }}?q={{ location }}" style='color: #ffffff'>{% print location %}</a></p>
                 {% endfor %}
                 <!--style="color: #CC0000"-->
                 </p>

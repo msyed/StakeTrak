@@ -124,13 +124,13 @@ def index():
 	else:
 		return abort(404)
 
-#render second page
-@app.route('/secondpage', methods=['GET', 'POST'])
-def secondpage():
+#render upload page
+@app.route('/upload', methods=['GET', 'POST'])
+def upload():
 	if not 'username' in session:
 		return abort(404)
 	#adapted from http://stackoverflow.com/questions/185936/delete-folder-contents-in-python
-	#delete all old files when renderding second page to ensure new upload screen for user
+	#delete all old files when rendering upload page to ensure new upload screen for user
 	files = os.listdir(UPLOAD_FOLDER)
 	for the_file in files:
 		file_path = os.path.join(UPLOAD_FOLDER, the_file)
@@ -139,13 +139,13 @@ def secondpage():
 				os.unlink(file_path)
 		except Exception, e:
 			print e
-	return render_template('secondpage.html')
+	return render_template('upload.html')
 
-@app.route('/dbsecondpage')
-def dbsecondpage():
-	if not 'username' in session:
-		return abort(404)
-	return render_template('dbsecondpage.html')
+# @app.route('/dbsecondpage')
+# def dbsecondpage():
+# 	if not 'username' in session:
+# 		return abort(404)
+# 	return render_template('dbsecondpage.html')
 
 #upload files, adapted from http://flask.pocoo.org/docs/0.10/patterns/fileuploads/
 @app.route('/uploader', methods=['POST'])
@@ -176,9 +176,9 @@ def customdata():
 		dbcustomdata(request.form["id"], request.form["customdata"], "db/" + session['username'] + ".db")
 		return "200 - OK!"
 
-#render third page
-@app.route('/thirdpage', methods=['GET', 'POST'])
-def thirdpage():
+#render search page
+@app.route('/search', methods=['GET', 'POST'])
+def search():
 	if not ((request.args.get('apikey', '') == "rollthru") or ('username' in session)):
 		return abort(404)
 	#render error screen if user does not upload files
@@ -254,7 +254,7 @@ def thirdpage():
 
 			# entities_with_id:
 			# [[72, 'NAME', ['summary'], [('key', 6.9)], ['location.txt'], ['related_1', 'related_2'], ...]
-			return render_template('thirdpage.html', wiki=total_entity_list, filenames1=filenames)
+			return render_template('search.html', wiki=total_entity_list, filenames1=filenames)
 		
 	#prevent GET requests for third page
 	if request.method == 'GET':
@@ -263,7 +263,7 @@ def thirdpage():
 		if searchword:
 			namedidentities = dbquery(searchword, "db/" + session['username'] + ".db")
 			if namedidentities:
-				return render_template('thirdpage.html', wiki=namedidentities)
+				return render_template('search.html', wiki=namedidentities)
 			else:
 				return render_template('emptysearch.html')
 	  	return redirect(url_for('index'))
