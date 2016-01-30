@@ -39,7 +39,28 @@ MAX_SENT_PER_ENTITY = 10
 MAX_TAGS_PER_ENTITY = 20
 MAX_MENTIONS_PER_ENTITY = 20
 
-LOGINS = {"users": None, "staketrak": "rollthrough42", "ASG_BLUE": "Albright_Stonebridge"}
+LOGINS = {"users": None, 
+		  "staketrak": "rollthrough42",
+		  "ASG_BLUE": "Albright_Stonebridge",
+		  "guest01": "cranberry53",
+		  "guest02": "potential22",
+		  "guest03": "phenomena73",
+		  "guest04": "magnet98",
+		  "guest05": "discovery65",
+		  "guest07": "hammerhead37",
+		  "guest08": "celebration19",
+		  "guest09": "amusing49",
+		  "guest10": "halloween83",
+		  "guest11": "functional45",
+		  "guest12": "volcano92",
+		  "guest13": "fortress44",
+		  "guest14": "dolphin29",
+		  "guest15": "fancy52",
+		  "guest16": "kitten79",
+		  "guest17": "academic36",
+		  "guest18": "daydream89",
+		  "guest19": "puzzle23",
+		  "guest20": "granite05" }
 
 #create a flask instance 
 app = Flask(__name__)

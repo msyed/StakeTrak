@@ -52,6 +52,7 @@ def get_entity_names(text, customstoplist):
     stopwords = []
     with open("entity_stoplist.txt", 'r') as f:
         stopwords = f.read().lower().split('\n')
+    open(customstoplist, 'a').close()
     with open(customstoplist, 'r') as f:
         stopwords = stopwords + f.read().lower().split('\n')
     newentitylist = [word for word in set(entity_names) if word.lower() not in set(stopwords)]
